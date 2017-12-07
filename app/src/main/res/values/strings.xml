@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Vouchers</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Card Info</string>
+    <string name="string_preference_file_key">vouchersPreferences</string>
+    <string name="card">Card</string>
+</resources>
