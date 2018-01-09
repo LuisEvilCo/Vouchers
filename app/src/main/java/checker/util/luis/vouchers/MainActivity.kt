@@ -9,14 +9,11 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
-import android.os.AsyncTask.execute
 import android.util.Log
 import okhttp3.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,17 +51,18 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    fun doPost(cardNumber: String) {
+    private fun doPost(cardNumber: String) {
         val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
         val client  = OkHttpClient()
-        val formBody = FormBody.Builder().add("TARJETA", cardNumber).build()
-        val fBody = MultipartBody.Builder().addFormDataPart("TARJETA", cardNumber)
-        val mediaType : MediaType? = MediaType.parse("application/x-www-form-urlencoded")
-        val body : RequestBody = RequestBody.create( mediaType, fBody.toString())
 
-        val request : Request = Request.Builder()
+        val form = FormBody.Builder()
+                .add("TARJETA" , cardNumber)
+                .build()
+
+        val request = Request.Builder()
+                .header("Content-Type", "application/x-www-form-urlencoded")
                 .url(url)
-                .post(body)
+                .post(form)
                 .build()
 
         val response = client.newCall(request).execute()
