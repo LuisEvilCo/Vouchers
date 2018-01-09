@@ -11,7 +11,11 @@ import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
-
+import android.os.AsyncTask.execute
+import android.util.Log
+import okhttp3.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,8 +26,19 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            doAsync {
+                val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
+                val card : String = sharedPref.getString(getString(R.string.card), "")
+
+                if(card.isNotEmpty()){
+                    doPost(card)
+                }
+                uiThread {
+                    Snackbar.make(view, "Updated", Snackbar.LENGTH_LONG)
+                            //.setAction("Action", null)
+                            .show()
+                }
+            }
         }
     }
 
@@ -37,6 +52,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         super.onResume()
+    }
+
+    fun doPost(cardNumber: String) {
+        val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
+        val client  = OkHttpClient()
+        val formBody = FormBody.Builder().add("TARJETA", cardNumber).build()
+        val fBody = MultipartBody.Builder().addFormDataPart("TARJETA", cardNumber)
+        val mediaType : MediaType? = MediaType.parse("application/x-www-form-urlencoded")
+        val body : RequestBody = RequestBody.create( mediaType, fBody.toString())
+
+        val request : Request = Request.Builder()
+                .url(url)
+                .post(body)
+                .build()
+
+        val response = client.newCall(request).execute()
+
+        Log.d("RESPONSE", response.body()?.string())
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
