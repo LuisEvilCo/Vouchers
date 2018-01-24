@@ -41,9 +41,7 @@ private inline fun <reified T> Request.execute() : T {
     val stream = when (code) {
         200 -> response.body()!!.charStream() // TODO, check the assert not null
         400 -> throw BadRequestException("Url : $url")
-        401 -> {
-            throw UnauthorizedException("Url : $url")
-        }
+        401 -> throw UnauthorizedException("Url : $url")
         404 -> throw NotFoundException(url)
         else -> throw InternalErrorException("Unexpected response code $code for $url")
     }
