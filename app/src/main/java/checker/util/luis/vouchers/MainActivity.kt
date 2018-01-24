@@ -11,6 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import android.util.Log
+import checker.util.luis.vouchers.model.Balance
 import okhttp3.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -22,16 +23,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        var balance : Balance? = null
+
         fab.setOnClickListener { view ->
             doAsync {
                 val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
                 val card : String = sharedPref.getString(getString(R.string.card), "")
 
-                if(card.isNotEmpty()){
-                    doPost(card)
+                if(card.isNotEmpty()) {
+                    //doPost(card)
+                    balance = VoucherClient.getBalance(card)
                 }
                 uiThread {
-                    Snackbar.make(view, "Updated", Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, "Updated " + balance?.amount, Snackbar.LENGTH_LONG)
                             //.setAction("Action", null)
                             .show()
                 }
