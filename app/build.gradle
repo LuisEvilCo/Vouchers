@@ -36,4 +36,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'org.jetbrains.anko:anko-common:0.9'
+    compile group : 'com.google.code.gson', name : 'gson', version :'2.7'
 }
