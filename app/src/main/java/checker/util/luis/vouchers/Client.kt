@@ -1,7 +1,10 @@
 package checker.util.luis.vouchers
 
 import checker.util.luis.vouchers.model.Balance
-import checker.util.luis.vouchers.utils.exception.*
+import checker.util.luis.vouchers.utils.exception.BadRequestException
+import checker.util.luis.vouchers.utils.exception.InternalErrorException
+import checker.util.luis.vouchers.utils.exception.NotFoundException
+import checker.util.luis.vouchers.utils.exception.UnauthorizedException
 import checker.util.luis.vouchers.utils.gson
 import okhttp3.FormBody
 import okhttp3.OkHttpClient

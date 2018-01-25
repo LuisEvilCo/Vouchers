@@ -4,14 +4,19 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+def gitHash = 'git rev-parse --short HEAD'.execute([],project.rootDir).text.trim()
+
+def gitCommitCount = 0 +
+        Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
+
 android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "checker.util.luis.vouchers"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode gitCommitCount
+        versionName gitHash
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -37,4 +42,8 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'org.jetbrains.anko:anko-common:0.9'
     compile group : 'com.google.code.gson', name : 'gson', version :'2.7'
+    // Room (1.1.0-alpha is the latest at time of commit)
+    implementation 'android.arch.persistence.room:runtime:1.0.0'
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
+
 }
