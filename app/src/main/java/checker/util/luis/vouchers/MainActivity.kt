@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
@@ -15,7 +14,10 @@ import kotlinx.android.synthetic.main.content_main.*
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.singleTop
 import org.jetbrains.anko.uiThread
 
 
@@ -38,9 +40,7 @@ class MainActivity : AppCompatActivity() {
                     balance = VoucherClient.getBalance(card)
                 }
                 uiThread {
-                    Snackbar.make(view, "Updated " + balance?.amount, Snackbar.LENGTH_LONG)
-                            //.setAction("Action", null)
-                            .show()
+                    longSnackbar(view, "Updated " + balance?.amount)
                     MainText.text = "${balance?.name} : ${balance?.amount}"
                 }
             }
@@ -52,8 +52,7 @@ class MainActivity : AppCompatActivity() {
         val card : String = sharedPref.getString(getString(R.string.card), "")
 
         if (card.isEmpty()){
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
+            startActivity(intentFor<SettingsActivity>().singleTop())
         }
 
         // all db work should be off the main thread
