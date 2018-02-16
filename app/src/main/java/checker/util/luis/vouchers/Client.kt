@@ -24,7 +24,8 @@ object VoucherClient {
         .build()!!
 
     fun getBalance(cardNumber: String) : Balance {
-        val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
+        val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
+        //val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
         val form = FormBody.Builder()
             .add("TARJETA" , cardNumber)
             .build()
@@ -81,13 +82,12 @@ private inline fun <reified T> Request.executeAsync() {
 //                        }
 
                         when(T::class) {
-                            Int::class -> ""
-                            Balance:: class -> ""
+                            Int::class -> Log.d("HEY", "this is wrong")
+                            Balance:: class -> Log.d("HEY", "it worked ?")
                         }
                     }
                 }
         )
-    TODO()
 }
 
 private inline fun <reified T> Request.tryExecute() : T? {
