@@ -1,24 +1,26 @@
 package checker.util.luis.vouchers
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import checker.util.luis.vouchers.model.Balance
+import checker.util.luis.vouchers.database.entity.BalanceEntity
+import checker.util.luis.vouchers.recyclerView.BalanceAdapter
+import checker.util.luis.vouchers.viewModel.BalanceViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
-import org.jetbrains.anko.uiThread
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,31 +29,48 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+//
+//        var balance : Balance? = null
+//
+//        fab.setOnClickListener { view ->
+//            doAsync {
+//                val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
+//                val card : String = sharedPref.getString(getString(R.string.card), "")
+//
+//                if(card.isNotEmpty()) {
+//                    //doPost(card)
+//                    balance = VoucherClient.getBalance(card)
+//                }
+//                uiThread {
+//                    longSnackbar(view, "Updated " + balance?.amount)
+//                    MainText.text = "${balance?.name} : ${balance?.amount}"
+//                }
+//            }
+//        }
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        val adapter = BalanceAdapter(this)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        var balance : Balance? = null
 
-        fab.setOnClickListener { view ->
-            doAsync {
-                val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
-                val card : String = sharedPref.getString(getString(R.string.card), "")
+        val mBalanceViewModel: BalanceViewModel =
+            ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
-                if(card.isNotEmpty()) {
-                    //doPost(card)
-                    balance = VoucherClient.getBalance(card)
-                }
-                uiThread {
-                    longSnackbar(view, "Updated " + balance?.amount)
-                    MainText.text = "${balance?.name} : ${balance?.amount}"
-                }
-            }
-        }
+        mBalanceViewModel.allEntries.observe(this,
+            Observer<List<BalanceEntity>> { updatedList ->
+                adapter.updateAdapter(updatedList)
+            })
+
     }
 
     override fun onResume() {
-        val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
-        val card : String = sharedPref.getString(getString(R.string.card), "")
+        val sharedPref: SharedPreferences = getSharedPreferences(
+            getString(R.string.string_preference_file_key),
+            Context.MODE_PRIVATE
+        )
+        val card: String = sharedPref.getString(getString(R.string.card), "")
 
-        if (card.isEmpty()){
+        if (card.isEmpty()) {
             startActivity(intentFor<SettingsActivity>().singleTop())
         }
 
@@ -66,17 +85,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun doPost(cardNumber: String) {
         val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
-        val client  = OkHttpClient()
+        val client = OkHttpClient()
 
         val form = FormBody.Builder()
-                .add("TARJETA" , cardNumber)
-                .build()
+            .add("TARJETA", cardNumber)
+            .build()
 
         val request = Request.Builder()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .url(url)
-                .post(form)
-                .build()
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .url(url)
+            .post(form)
+            .build()
 
         val response = client.newCall(request).execute()
 

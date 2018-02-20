@@ -5,17 +5,21 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
-@Entity
-class BalanceEntity {
-    @PrimaryKey
-    private val id : UUID = UUID.randomUUID()
 
-    @ColumnInfo(name = "name")
-    private val name : String = ""
+@Entity(tableName = "balance_history")
+class BalanceEntity(
+    //TODO : this will require a type converter
+//    @field:PrimaryKey
+//    @field:ColumnInfo(name = "word")
+//    val id: UUID = UUID.randomUUID(),
 
-    @ColumnInfo(name = "amount")
-    private val amount : String = ""
+    @field:PrimaryKey
+    @field:ColumnInfo(name = "name")
+    var name: String = "",
 
-    @ColumnInfo(name = "lastUpdated")
-    private val lastUpdated : String = ""
-}
+    @field:ColumnInfo(name = "amount")
+    var amount: String = "",
+
+    @field:ColumnInfo(name = "lastUpdated")
+    var lastUpdated: String = ""
+)
