@@ -9,8 +9,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 val gson = GsonBuilder()
-    .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
-    .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
+    //.registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
+    //.registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer())
     .create()
 
 
