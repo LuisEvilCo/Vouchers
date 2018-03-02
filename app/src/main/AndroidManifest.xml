@@ -23,7 +23,10 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="53d1a4ed62ba3f3dc1c1848ba8fa1ee1cf4be76a" />
     </application>
 
 </manifest>

@@ -21,6 +21,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
+import com.crashlytics.android.core.CrashlyticsCore
+
+
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +36,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        // Set up Crashlytics, disabled for debug builds
+        val crashlyticsKit = Crashlytics.Builder()
+            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+            .build()
+
+        // Initialize Fabric with the debug-disabled crashlytics.
+        Fabric.with(this, crashlyticsKit)
 //
 //        var balance : Balance? = null
 //
@@ -73,12 +88,6 @@ class MainActivity : AppCompatActivity() {
         if (card.isEmpty()) {
             startActivity(intentFor<SettingsActivity>().singleTop())
         }
-
-        // all db work should be off the main thread
-//        val db = Room.databaseBuilder(
-//            applicationContext,
-//            AppDatabase::class.java, "vouchers"
-//        ).build()
 
         super.onResume()
     }
