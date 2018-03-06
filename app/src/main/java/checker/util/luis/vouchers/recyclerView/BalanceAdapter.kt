@@ -16,6 +16,7 @@ class BalanceAdapter constructor(context: Context) : RecyclerView.Adapter<Balanc
         RecyclerView.ViewHolder(itemView) {
         val balanceName: TextView = itemView.recycler_textView_name
         val balanceAmount : TextView = itemView.recycler_textView_amount
+        val balanceDate : TextView = itemView.recycler_textView_date
     }
 
     // Adapter vars, we use this joined assignment as constructor
@@ -32,9 +33,11 @@ class BalanceAdapter constructor(context: Context) : RecyclerView.Adapter<Balanc
             val current : BalanceEntity  = mBalance!![position]
             holder.balanceAmount.text = current.amount
             holder.balanceName.text = current.name
+            holder.balanceDate.text = current.lastUpdated.toString()
         } else {
             holder.balanceAmount.text = "$0.0"
             holder.balanceName.text = "unknown"
+            holder.balanceDate.text = "date?"
         }
     }
 

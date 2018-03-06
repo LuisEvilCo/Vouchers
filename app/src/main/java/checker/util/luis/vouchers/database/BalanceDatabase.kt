@@ -4,13 +4,18 @@ import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import android.os.AsyncTask
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
+import checker.util.luis.vouchers.database.entity.CustomTypeConverters
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Database(entities = [(BalanceEntity::class)], version = 1)
+@TypeConverters(CustomTypeConverters::class)
 abstract class BalanceDatabase : RoomDatabase() {
 
     abstract fun balanceDao(): BalanceDao
@@ -50,9 +55,23 @@ abstract class BalanceDatabase : RoomDatabase() {
 
         override fun doInBackground(vararg voids: Void): Void? {
             mDao.deleteAll()
-            var entity = BalanceEntity("Luis", "$89.99", "")
+            val myTime = "14:10"
+            val df = SimpleDateFormat("HH:mm")
+            val d = df.parse(myTime)
+            val cal = Calendar.getInstance()
+            cal.time = d
+            cal.add(Calendar.MINUTE, 10)
+            val newTime = df.format(cal.time)
+
+            var entity = BalanceEntity(name = "Luis", amount = "$89.99", lastUpdated = cal.time )
             mDao.insert(entity)
-            entity = BalanceEntity("Luis T", "$85.2", "")
+
+            cal.add(Calendar.YEAR, 99)
+            entity = BalanceEntity(name = "Luis T", amount = "$85.2", lastUpdated = cal.time)
+            mDao.insert(entity)
+            entity = BalanceEntity(name = "LuisA", amount = "$0")
+            mDao.insert(entity)
+            entity = BalanceEntity(name = "LuisB", amount = "$0.1")
             mDao.insert(entity)
             return null
         }
