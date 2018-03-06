@@ -14,7 +14,10 @@ interface BalanceDao {
     fun insert(balance : BalanceEntity)
 
     @Insert
-    fun insertAll(vararg balance : BalanceEntity)
+    fun insertBatch(vararg balance : BalanceEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertList(balanceList : List<BalanceEntity>)
 
     @Delete
     fun delete(balance : BalanceEntity)
@@ -22,4 +25,13 @@ interface BalanceDao {
     @Language("RoomSql")
     @Query("DELETE FROM balance_history")
     fun deleteAll()
+
+    @Language("RoomSql")
+    @Query("SELECT * FROM balance_history WHERE balance_history.name LIKE :nameString")
+    // Note on the LIKE , we should use the wildcard in the val `%nameString%` not in the query itself
+    fun getByName(nameString : String) : LiveData<List<BalanceEntity>>
+
+    @Language("RoomSql")
+    @Query("SELECT * FROM balance_history ORDER BY balance_history.lastUpdated DESC")
+    fun getDescendant() : LiveData<List<BalanceEntity>>
 }

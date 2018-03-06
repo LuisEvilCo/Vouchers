@@ -12,22 +12,17 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
 import checker.util.luis.vouchers.viewModel.BalanceViewModel
+import com.crashlytics.android.Crashlytics
+import com.crashlytics.android.core.CrashlyticsCore
+import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
-import com.crashlytics.android.Crashlytics
-import io.fabric.sdk.android.Fabric
-import com.crashlytics.android.core.CrashlyticsCore
-
-
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -71,11 +66,20 @@ class MainActivity : AppCompatActivity() {
         val mBalanceViewModel: BalanceViewModel =
             ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
-        mBalanceViewModel.allEntries.observe(this,
-            Observer<List<BalanceEntity>> { updatedList ->
+//        mBalanceViewModel.allEntries.observe(this,
+//            Observer<List<BalanceEntity>> { updatedList ->
+//                adapter.updateAdapter(updatedList)
+//            })
+
+//        mBalanceViewModel.getByName("Luis%").observe(this,
+//            Observer { updatedList ->
+//                adapter.updateAdapter(updatedList)
+//            })
+
+        mBalanceViewModel.getDesc().observe(this,
+            Observer { updatedList ->
                 adapter.updateAdapter(updatedList)
             })
-
     }
 
     override fun onResume() {

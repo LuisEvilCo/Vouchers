@@ -20,4 +20,12 @@
         android:background="@android:color/holo_blue_light"
         />
 
+    <TextView
+        android:id="@+id/recycler_textView_date"
+        style="@style/balance_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_light"
+        />
+
 </LinearLayout>

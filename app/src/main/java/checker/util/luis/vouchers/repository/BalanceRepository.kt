@@ -18,6 +18,14 @@ class BalanceRepository (application: Application) {
         InsertAsyncTask(mBalanceDao).execute(balance)
     }
 
+    fun getByName(nameString : String): LiveData<List<BalanceEntity>> {
+        return mBalanceDao.getByName(nameString)
+    }
+
+    fun getDesc() : LiveData<List<BalanceEntity>> {
+        return mBalanceDao.getDescendant()
+    }
+
     private class InsertAsyncTask internal constructor(private val mAsyncTaskDao: BalanceDao) :
             AsyncTask<BalanceEntity, Void, Void>() {
         override fun doInBackground(vararg params: BalanceEntity?): Void? {
