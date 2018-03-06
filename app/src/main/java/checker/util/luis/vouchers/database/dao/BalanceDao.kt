@@ -14,7 +14,10 @@ interface BalanceDao {
     fun insert(balance : BalanceEntity)
 
     @Insert
-    fun insertAll(vararg balance : BalanceEntity)
+    fun insertBatch(vararg balance : BalanceEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertList(balanceList : List<BalanceEntity>)
 
     @Delete
     fun delete(balance : BalanceEntity)

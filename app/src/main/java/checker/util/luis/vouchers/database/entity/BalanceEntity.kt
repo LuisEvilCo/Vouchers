@@ -22,7 +22,29 @@ class BalanceEntity @JvmOverloads constructor (
 
     @field:ColumnInfo(name = "lastUpdated")
     var lastUpdated: Date = Calendar.getInstance().time
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as BalanceEntity
+
+        if (id != other.id) return false
+        if (name != other.name) return false
+        if (amount != other.amount) return false
+        if (lastUpdated != other.lastUpdated) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 42 * result + name.hashCode()
+        result = 42 * result + amount.hashCode()
+        result = 42 * result + lastUpdated.hashCode()
+        return result
+    }
+}
 
 
 class CustomTypeConverters {
