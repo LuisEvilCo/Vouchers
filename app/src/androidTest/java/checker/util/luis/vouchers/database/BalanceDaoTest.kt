@@ -4,16 +4,13 @@
 package checker.util.luis.vouchers.database
 
 import android.support.test.runner.AndroidJUnit4
-
-import org.junit.Test
-import org.junit.runner.RunWith
-
-import checker.util.luis.vouchers.util.LiveDataTestUtil
 import checker.util.luis.vouchers.database.entity.BalanceEntity
-
+import checker.util.luis.vouchers.util.LiveDataTestUtil
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -91,7 +88,7 @@ class BalanceDaoTest : DbTest() {
             name = "Luis B",
             amount = "$99.20"
         )
-        inMemoryDb.balanceDao().insertBatch(balance1, balance2, balance3)
+        inMemoryDb.balanceDao().insert(balance1, balance2, balance3)
 
         val readData = LiveDataTestUtil.getValue(
             inMemoryDb.balanceDao().allRecords
@@ -122,7 +119,7 @@ class BalanceDaoTest : DbTest() {
             )
         )
 
-        inMemoryDb.balanceDao().insertList(balanceList)
+        inMemoryDb.balanceDao().insert(balanceList)
 
         val readData = LiveDataTestUtil.getValue(
             inMemoryDb.balanceDao().allRecords
@@ -147,7 +144,7 @@ class BalanceDaoTest : DbTest() {
         )
 
         // inserting two records
-        inMemoryDb.balanceDao().insertBatch(balance1, balance2)
+        inMemoryDb.balanceDao().insert(balance1, balance2)
 
         var readData = LiveDataTestUtil.getValue(
             inMemoryDb.balanceDao().allRecords
@@ -188,7 +185,7 @@ class BalanceDaoTest : DbTest() {
             amount = "$99.20"
         )
 
-        inMemoryDb.balanceDao().insertBatch(balance1, balance2, balance3)
+        inMemoryDb.balanceDao().insert(balance1, balance2, balance3)
 
         var readData = LiveDataTestUtil.getValue(
             inMemoryDb.balanceDao().allRecords
@@ -258,7 +255,7 @@ class BalanceDaoTest : DbTest() {
             lastUpdated = cal.time
         )
 
-        inMemoryDb.balanceDao().insertBatch(balance1, balance2, balance3)
+        inMemoryDb.balanceDao().insert(balance1, balance2, balance3)
 
         val readData = LiveDataTestUtil.getValue(
             inMemoryDb.balanceDao().getDescendant()
@@ -290,7 +287,7 @@ class BalanceDaoTest : DbTest() {
             amount = "$99.35"
         )
 
-        inMemoryDb.balanceDao().insertBatch(balance1, balance2, balance3)
+        inMemoryDb.balanceDao().insert(balance1, balance2, balance3)
 
         var readData = LiveDataTestUtil.getValue(
             inMemoryDb.balanceDao().getByName("Luis")
@@ -325,5 +322,57 @@ class BalanceDaoTest : DbTest() {
         )
 
         assertThat(readData.size, equalTo(0))
+    }
+
+    @Test
+    @Throws(InterruptedException::class)
+    fun orderByDateLimit(){
+        val myTime = "14:10"
+        val df = SimpleDateFormat("HH:mm")
+        val d = df.parse(myTime)
+        val cal = Calendar.getInstance()
+        cal.time = d
+        cal.add(Calendar.YEAR, -2)
+        //val newTimeString = df.format(cal.time)
+
+        val balance1 = BalanceEntity(
+            name = "Luis",
+            amount = "$89.99",
+            lastUpdated = cal.time
+        )
+
+        cal.add(Calendar.MINUTE, 15)
+
+        val balance2 = BalanceEntity(
+            name = "Luis 2",
+            amount = "$99.05",
+            lastUpdated = cal.time
+        )
+
+        cal.add(Calendar.YEAR, 5)
+
+        val balance3 = BalanceEntity(
+            name = "Luis 3",
+            amount = "$99.35",
+            lastUpdated = cal.time
+        )
+
+        cal.add(Calendar.MINUTE,60 * 24)
+
+        val balance4 = BalanceEntity(
+            name = "Luis 4",
+            amount = "$99.45",
+            lastUpdated = cal.time
+        )
+
+        inMemoryDb.balanceDao().insert(balance1, balance2, balance3, balance4)
+
+        val readData = LiveDataTestUtil.getValue(
+            inMemoryDb.balanceDao().getDescendant(2)
+        )
+
+        assertNotNull(readData)
+        assertThat(readData.size, equalTo(2))
+        assertThat(readData[0].lastUpdated > readData[1].lastUpdated, equalTo(true))
     }
 }

@@ -10,8 +10,12 @@ class BalanceViewModel(application: Application) : AndroidViewModel(application)
     private val mRepository = BalanceRepository(application)
     val allEntries: LiveData<List<BalanceEntity>> = mRepository.allRecords
 
-    fun insert(balance: BalanceEntity) {
-        mRepository.insert(balance)
+    fun insert(vararg balance: BalanceEntity) {
+        balance.forEach { record -> mRepository.insert(record) }
+    }
+
+    fun insert(balanceList: List<BalanceEntity>) {
+        mRepository.insert(balanceList)
     }
 
     fun getByName(name: String): LiveData<List<BalanceEntity>> {
@@ -20,5 +24,17 @@ class BalanceViewModel(application: Application) : AndroidViewModel(application)
 
     fun getDesc(): LiveData<List<BalanceEntity>> {
         return mRepository.getDesc()
+    }
+
+    fun getDesc(limit : Int): LiveData<List<BalanceEntity>> {
+        return mRepository.getDesc(limit)
+    }
+
+    fun delete(balance: BalanceEntity) {
+        mRepository.delete(balance)
+    }
+
+    fun deleteAll() {
+        mRepository.deleteAll()
     }
 }
