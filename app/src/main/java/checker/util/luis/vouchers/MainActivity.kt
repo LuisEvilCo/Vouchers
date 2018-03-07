@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
 import checker.util.luis.vouchers.viewModel.BalanceViewModel
 import com.crashlytics.android.Crashlytics
@@ -21,6 +22,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
 
@@ -80,6 +82,40 @@ class MainActivity : AppCompatActivity() {
             Observer { updatedList ->
                 adapter.updateAdapter(updatedList)
             })
+
+        doAsync {
+            val delayMillis = 1500L
+            mBalanceViewModel.deleteAll()
+            Thread.sleep(delayMillis)
+
+            val b1 = BalanceEntity(name = "test", amount = "hey jude")
+            mBalanceViewModel.insert(b1)
+            Thread.sleep(delayMillis)
+
+            mBalanceViewModel.delete(b1)
+            Thread.sleep(delayMillis)
+
+            val b2 = BalanceEntity(name = "hey", amount = "jude")
+            mBalanceViewModel.insert(b2)
+            Thread.sleep(delayMillis)
+
+            mBalanceViewModel.delete(b1)
+            mBalanceViewModel.delete(b2)
+            Thread.sleep(delayMillis)
+
+            mBalanceViewModel.insert(b1,b2)
+            Thread.sleep(delayMillis)
+
+            mBalanceViewModel.deleteAll()
+            Thread.sleep(delayMillis)
+
+            mBalanceViewModel.insert(
+                listOf(b1,b2)
+            )
+
+        }
+
+
     }
 
     override fun onResume() {

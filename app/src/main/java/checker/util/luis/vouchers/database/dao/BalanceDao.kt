@@ -8,19 +8,16 @@ import org.intellij.lang.annotations.Language
 @Dao
 interface BalanceDao {
     @get:Query("SELECT * FROM balance_history")
-    val allRecords : LiveData<List<BalanceEntity>>
+    val allRecords: LiveData<List<BalanceEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(balance : BalanceEntity)
-
-    @Insert
-    fun insertBatch(vararg balance : BalanceEntity)
+    fun insert(vararg balance: BalanceEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertList(balanceList : List<BalanceEntity>)
+    fun insert(balanceList: List<BalanceEntity>)
 
     @Delete
-    fun delete(balance : BalanceEntity)
+    fun delete(balance: BalanceEntity)
 
     @Language("RoomSql")
     @Query("DELETE FROM balance_history")
@@ -29,9 +26,13 @@ interface BalanceDao {
     @Language("RoomSql")
     @Query("SELECT * FROM balance_history WHERE balance_history.name LIKE :nameString")
     // Note on the LIKE , we should use the wildcard in the val `%nameString%` not in the query itself
-    fun getByName(nameString : String) : LiveData<List<BalanceEntity>>
+    fun getByName(nameString: String): LiveData<List<BalanceEntity>>
 
     @Language("RoomSql")
     @Query("SELECT * FROM balance_history ORDER BY balance_history.lastUpdated DESC")
-    fun getDescendant() : LiveData<List<BalanceEntity>>
+    fun getDescendant(): LiveData<List<BalanceEntity>>
+
+    @Language("RoomSql")
+    @Query("SELECT * FROM balance_history ORDER BY balance_history.lastUpdated DESC LIMIT :limit")
+    fun getDescendant(limit: Int): LiveData<List<BalanceEntity>>
 }

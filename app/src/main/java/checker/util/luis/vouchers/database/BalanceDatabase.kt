@@ -10,8 +10,6 @@ import android.os.AsyncTask
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.database.entity.CustomTypeConverters
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 @Database(entities = [(BalanceEntity::class)], version = 1)
@@ -54,25 +52,25 @@ abstract class BalanceDatabase : RoomDatabase() {
         private val mDao: BalanceDao = db.balanceDao()
 
         override fun doInBackground(vararg voids: Void): Void? {
-            mDao.deleteAll()
-            val myTime = "14:10"
-            val df = SimpleDateFormat("HH:mm")
-            val d = df.parse(myTime)
-            val cal = Calendar.getInstance()
-            cal.time = d
-            cal.add(Calendar.MINUTE, 10)
-            val newTime = df.format(cal.time)
-
-            var entity = BalanceEntity(name = "Luis", amount = "$89.99", lastUpdated = cal.time )
-            mDao.insert(entity)
-
-            cal.add(Calendar.YEAR, 99)
-            entity = BalanceEntity(name = "Luis T", amount = "$85.2", lastUpdated = cal.time)
-            mDao.insert(entity)
-            entity = BalanceEntity(name = "LuisA", amount = "$0")
-            mDao.insert(entity)
-            entity = BalanceEntity(name = "LuisB", amount = "$0.1")
-            mDao.insert(entity)
+            //mDao.deleteAll()
+//            val myTime = "14:10"
+//            val df = SimpleDateFormat("HH:mm")
+//            val d = df.parse(myTime)
+//            val cal = Calendar.getInstance()
+//            cal.time = d
+//            cal.add(Calendar.MINUTE, 10)
+//            val newTime = df.format(cal.time)
+//
+//            var entity = BalanceEntity(name = "Luis", amount = "$89.99", lastUpdated = cal.time )
+//            mDao.insert(entity)
+//
+//            cal.add(Calendar.YEAR, 99)
+//            entity = BalanceEntity(name = "Luis T", amount = "$85.2", lastUpdated = cal.time)
+//            mDao.insert(entity)
+//            entity = BalanceEntity(name = "LuisA", amount = "$0")
+//            mDao.insert(entity)
+//            entity = BalanceEntity(name = "LuisB", amount = "$0.1")
+//            mDao.insert(entity)
             return null
         }
     }
