@@ -10,9 +10,6 @@ interface BalanceDao {
     @get:Query("SELECT * FROM balance_history")
     val allRecords: LiveData<List<BalanceEntity>>
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    fun insert(balance: BalanceEntity)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg balance: BalanceEntity)
 
