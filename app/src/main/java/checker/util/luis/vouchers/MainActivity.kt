@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import checker.util.luis.vouchers.database.entity.BalanceEntity
+import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
 import checker.util.luis.vouchers.viewModel.BalanceViewModel
 import com.crashlytics.android.Crashlytics
@@ -29,10 +30,20 @@ import org.jetbrains.anko.singleTop
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var mNotificationsHelper: NotificationsHelper
+
+    companion object {
+        private val TAG = MainActivity::class.java.simpleName
+        private const val NOTIFICATION_BALANCE = 1100
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        // Setting up the notificationsHelper
+        mNotificationsHelper = NotificationsHelper(this)
 
         // Set up Crashlytics, disabled for debug builds
         val crashlyticsKit = Crashlytics.Builder()
@@ -44,7 +55,14 @@ class MainActivity : AppCompatActivity() {
 //
 //        var balance : Balance? = null
 //
-//        fab.setOnClickListener { view ->
+        fab.setOnClickListener { view ->
+            mNotificationsHelper.notify(
+                id = NOTIFICATION_BALANCE,
+                notification = mNotificationsHelper.getNotificationBalance(
+                    title = "title",
+                    body = "hey jude"
+                )
+            )
 //            doAsync {
 //                val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
 //                val card : String = sharedPref.getString(getString(R.string.card), "")
@@ -58,7 +76,8 @@ class MainActivity : AppCompatActivity() {
 //                    MainText.text = "${balance?.name} : ${balance?.amount}"
 //                }
 //            }
-//        }
+
+        }
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = BalanceAdapter(this)
         recyclerView.adapter = adapter
@@ -148,7 +167,7 @@ class MainActivity : AppCompatActivity() {
 
         val response = client.newCall(request).execute()
 
-        Log.d("RESPONSE", response.body()?.string())
+        Log.d(TAG, response.body()?.string())
 
     }
 
