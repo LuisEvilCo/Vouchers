@@ -3,4 +3,8 @@
     <string name="title_activity_settings">Card Info</string>
     <string name="string_preference_file_key">vouchersPreferences</string>
     <string name="card">Card</string>
+
+    <!-- Notifications channel -->
+
+    <string name="notification_channel_balance">Balance Notification Channel</string>
 </resources>
