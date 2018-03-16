@@ -3,15 +3,21 @@ package checker.util.luis.vouchers
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.content_settings.*
+import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.snackbar
 
 
-class SettingsActivity : AppCompatActivity(){
+class SettingsActivity : AppCompatActivity() {
+
+    companion object {
+        private const val onBackDelay = 1000L //ms
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) { //TODO : ding into View Models
         super.onCreate(savedInstanceState)
@@ -26,20 +32,69 @@ class SettingsActivity : AppCompatActivity(){
 
         val cardEditText = editTextCard as EditText
 
-        val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
-        val card : String = sharedPref.getString(getString(R.string.card), "")
+        val sharedPref: SharedPreferences = getSharedPreferences(
+            getString(R.string.string_preference_file_key),
+            Context.MODE_PRIVATE
+        )
+        val card: String = sharedPref.getString(getString(R.string.card), "")
 
         cardEditText.setText(card)
 
         fabSettings.setOnClickListener { view ->
-            val editor: SharedPreferences.Editor = sharedPref.edit()
-            editor.putString(getString(R.string.card), cardEditText.text.toString())
-            editor.apply()
 
-            Snackbar.make(view, "Saved", Snackbar.LENGTH_LONG)
-                    //.setAction("Action", null)
-                    .show()
-            finish()
+            val cardString = cardEditText.text.toString()
+
+            if (cardString.isEmpty()) {
+                this.onBackPressed()
+            } else {
+                val editor: SharedPreferences.Editor = sharedPref.edit()
+                editor.putString(getString(R.string.card), cardString)
+                editor.apply()
+
+                snackbar(view, "Saved")
+
+                view.postDelayed({
+                    finish()
+                }, onBackDelay)
+            }
         }
+    }
+
+    override fun onBackPressed() {
+
+        val sharedPref: SharedPreferences = getSharedPreferences(
+            getString(R.string.string_preference_file_key),
+            Context.MODE_PRIVATE
+        )
+
+        val card: String = sharedPref.getString(getString(R.string.card), "")
+        val coordinatorView = this.findViewById<View>(R.id.activity_Settings_Coordinator)
+
+        if (card.isEmpty()) {
+
+            val cardString = (editTextCard as EditText).text.toString()
+
+            if (!cardString.isEmpty()) {
+
+                val editor: SharedPreferences.Editor = sharedPref.edit()
+                editor.putString(getString(R.string.card), cardString)
+                editor.apply()
+
+                snackbar(coordinatorView, getString(R.string.autoSaving))
+
+                coordinatorView.postDelayed({
+                    super.onBackPressed()
+                }, onBackDelay)
+
+            } else {
+                snackbar(coordinatorView, getString(R.string.card_info))
+            }
+        } else {
+            longSnackbar(coordinatorView, getString(R.string.discarding_changes))
+            coordinatorView.postDelayed({
+                super.onBackPressed()
+            }, onBackDelay)
+        }
+
     }
 }

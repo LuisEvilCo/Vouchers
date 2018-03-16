@@ -98,9 +98,8 @@ class MainActivity : AppCompatActivity() {
 //            })
 
         mBalanceViewModel.getDesc().observe(this,
-            Observer { updatedList ->
-                adapter.updateAdapter(updatedList)
-            })
+            Observer(adapter::updateAdapter)
+        )
 
         doAsync {
             val delayMillis = 1500L

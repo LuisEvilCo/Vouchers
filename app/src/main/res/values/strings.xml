@@ -7,4 +7,9 @@
     <!-- Notifications channel -->
 
     <string name="notification_channel_balance">Balance Notification Channel</string>
+
+    <!-- Toast -->
+    <string name="card_info">Please fill your card info</string>
+    <string name="autoSaving">Auto saving…</string>
+    <string name="discarding_changes">Discarding changes</string>
 </resources>
