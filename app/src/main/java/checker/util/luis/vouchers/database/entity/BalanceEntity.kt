@@ -4,10 +4,18 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import android.arch.persistence.room.TypeConverter
+import checker.util.luis.vouchers.utils.safeString
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.annotations.JsonAdapter
+import com.google.gson.annotations.SerializedName
+import java.lang.reflect.Type
 import java.util.*
 
 
 @Entity(tableName = "balance_history")
+@JsonAdapter(BalanceEntityDeserializer::class)
 class BalanceEntity @JvmOverloads constructor (
 
     @field:PrimaryKey
@@ -15,9 +23,11 @@ class BalanceEntity @JvmOverloads constructor (
     var id: UUID = UUID.randomUUID(),
 
     @field:ColumnInfo(name = "name")
+    @SerializedName("nombre")
     var name: String = "",
 
     @field:ColumnInfo(name = "amount")
+    @SerializedName("value")
     var amount: String = "",
 
     @field:ColumnInfo(name = "lastUpdated")
@@ -43,6 +53,39 @@ class BalanceEntity @JvmOverloads constructor (
         result = 42 * result + amount.hashCode()
         result = 42 * result + lastUpdated.hashCode()
         return result
+    }
+
+    fun hasChange(other: Any?): Boolean {
+        if (this === other) return false
+        if (javaClass != other?.javaClass) return true
+
+        other as BalanceEntity
+        if (name != other.name) return true
+        if (amount != other.amount) return true
+
+        return false
+    }
+}
+
+class BalanceEntityDeserializer: JsonDeserializer<BalanceEntity> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): BalanceEntity {
+        json ?: throw IllegalStateException("JSON does not exist")
+        typeOfT ?: throw IllegalStateException("Type does not exist")
+        context ?: throw IllegalStateException("Deserialization context does not exist")
+
+        val jsonObject = json.asJsonObject
+
+        val name = jsonObject["nombre"].safeString(context)
+        val value = jsonObject["value"].safeString(context)
+
+        return BalanceEntity(
+            name = name,
+            amount = value
+        )
     }
 }
 

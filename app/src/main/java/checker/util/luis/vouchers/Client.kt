@@ -1,7 +1,7 @@
 package checker.util.luis.vouchers
 
 import android.util.Log
-import checker.util.luis.vouchers.model.Balance
+import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.utils.exception.BadRequestException
 import checker.util.luis.vouchers.utils.exception.InternalErrorException
 import checker.util.luis.vouchers.utils.exception.NotFoundException
@@ -23,7 +23,7 @@ object VoucherClient {
         }
         .build()!!
 
-    fun getBalance(cardNumber: String) : Balance {
+    fun getBalance(cardNumber: String) : BalanceEntity {
         val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
         //val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
         val form = FormBody.Builder()
@@ -35,9 +35,23 @@ object VoucherClient {
             .post(form)
             .build()
 
-        result.executeAsync<Balance>()
+        result.executeAsync<BalanceEntity>()
 
-        return  result.tryExecute() ?: Balance("","")
+        return  result.tryExecute() ?: BalanceEntity(name = "", amount = "")
+    }
+
+    fun getBalanceEntity(cardNumber: String) : BalanceEntity {
+        val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
+        val form = FormBody.Builder()
+            .add("TARJETA", cardNumber)
+            .build()
+
+        val result = Request.Builder()
+            .url(url)
+            .post(form)
+            .build()
+
+        return result.tryExecute<BalanceEntity>() ?: BalanceEntity(name= "", amount = "")
     }
 }
 
@@ -78,12 +92,12 @@ private inline fun <reified T> Request.executeAsync() {
 
 //                        when(result::class) { // why this is invalid ?
 //                            Int::class -> ""
-//                            Balance::class -> ""
+//                            BalanceEntity::class -> ""
 //                        }
 
                         when(T::class) {
                             Int::class -> Log.d("HEY", "this is wrong")
-                            Balance:: class -> Log.d("HEY", "it worked ?")
+                            BalanceEntity:: class -> Log.d("HEY", "it worked ?")
                         }
                     }
                 }

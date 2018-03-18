@@ -3,9 +3,12 @@ package checker.util.luis.vouchers.repository
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.os.AsyncTask
+import android.util.Log
 import checker.util.luis.vouchers.database.BalanceDatabase
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
+import checker.util.luis.vouchers.utils.LiveDataUtil
+import kotlin.system.measureTimeMillis
 
 
 class BalanceRepository (application: Application) {
@@ -41,6 +44,16 @@ class BalanceRepository (application: Application) {
 
     fun deleteAll() {
         mBalanceDao.deleteAll()
+    }
+
+    fun addRecord(newRecord: BalanceEntity) {
+        val latest = LiveDataUtil
+            .getValue(mBalanceDao.getDescendant(1))
+
+        if (latest.isEmpty() || latest.first().hasChange(newRecord)) {
+            this.insert(newRecord)
+        }
+
     }
 
     private class InsertAsyncTask internal constructor(private val mAsyncTaskDao: BalanceDao) :

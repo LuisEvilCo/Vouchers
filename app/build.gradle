@@ -53,6 +53,10 @@ android {
             dimension "default"
         }
     }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -61,7 +65,7 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$support_lib_version"
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation "com.android.support:design:$support_lib_version"
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
 
     // Pleasant Android application development
     compile "org.jetbrains.anko:anko-common:$anko_version"

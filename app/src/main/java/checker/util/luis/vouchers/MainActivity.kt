@@ -26,6 +26,7 @@ import okhttp3.Request
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
-        private const val NOTIFICATION_BALANCE = 1100
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,50 +52,35 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize Fabric with the debug-disabled crashlytics.
         Fabric.with(this, crashlyticsKit)
-//
-//        var balance : Balance? = null
-//
-        fab.setOnClickListener { view ->
+
+        // Have the View Model ready for onClickListeners
+        val mBalanceViewModel: BalanceViewModel =
+            ViewModelProviders.of(this)[BalanceViewModel::class.java]
+
+        fab.setOnClickListener { _ ->
             mNotificationsHelper.notify(
-                id = NOTIFICATION_BALANCE,
+                id = Random().nextInt(),
                 notification = mNotificationsHelper.getNotificationBalance(
                     title = "title",
                     body = "hey jude"
                 )
             )
-//            doAsync {
-//                val sharedPref : SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
-//                val card : String = sharedPref.getString(getString(R.string.card), "")
-//
-//                if(card.isNotEmpty()) {
-//                    //doPost(card)
-//                    balance = VoucherClient.getBalance(card)
-//                }
-//                uiThread {
-//                    longSnackbar(view, "Updated " + balance?.amount)
-//                    MainText.text = "${balance?.name} : ${balance?.amount}"
-//                }
-//            }
 
+            var balanceEntity: BalanceEntity?
+            doAsync {
+                val sharedPref: SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
+                val card: String = sharedPref.getString(getString(R.string.card), "")
+
+                if(card.isNotEmpty()) {
+                    balanceEntity = VoucherClient.getBalanceEntity(card)
+                    balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
+                }
+            }
         }
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = BalanceAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-
-        val mBalanceViewModel: BalanceViewModel =
-            ViewModelProviders.of(this)[BalanceViewModel::class.java]
-
-//        mBalanceViewModel.allEntries.observe(this,
-//            Observer<List<BalanceEntity>> { updatedList ->
-//                adapter.updateAdapter(updatedList)
-//            })
-
-//        mBalanceViewModel.getByName("Luis%").observe(this,
-//            Observer { updatedList ->
-//                adapter.updateAdapter(updatedList)
-//            })
 
         mBalanceViewModel.getDesc().observe(this,
             Observer(adapter::updateAdapter)

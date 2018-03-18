@@ -37,4 +37,8 @@ class BalanceViewModel(application: Application) : AndroidViewModel(application)
     fun deleteAll() {
         mRepository.deleteAll()
     }
+
+    fun addRecord(newRecord: BalanceEntity) {
+        mRepository.addRecord(newRecord)
+    }
 }
