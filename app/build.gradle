@@ -96,3 +96,5 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:$support_runner"
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
+// Always after android plugin
+apply plugin: 'com.getkeepsafe.dexcount'
