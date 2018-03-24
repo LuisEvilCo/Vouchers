@@ -15,7 +15,8 @@ class SchedulerHelper(val context: Context) {
         const val jobID: Int = 1
         private const val TAG = "SchedulerHelper"
         lateinit var serviceComponent: ComponentName
-        val executionDeadLine: Long = 5 * TimeUnit.MINUTES.toMillis(1)
+        val periodicInterval: Long = 5 * TimeUnit.MINUTES.toMillis(1)
+        val periodicFlex: Long = (periodicInterval * 0.7).toLong()  // 7 % of flex
     }
 
     init {
@@ -29,19 +30,22 @@ class SchedulerHelper(val context: Context) {
     }
 
     private fun getJobBuilder(): JobInfo.Builder {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            JobInfo.Builder(jobID, serviceComponent)
-                .setOverrideDeadline(executionDeadLine)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setRequiresDeviceIdle(false)
-                .setRequiresCharging(false)
-                .setRequiresBatteryNotLow(true)
-        } else {
-            JobInfo.Builder(jobID, serviceComponent)
-                .setOverrideDeadline(executionDeadLine)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setRequiresDeviceIdle(false)
-                .setRequiresCharging(false)
+        val builder = JobInfo.Builder(jobID, serviceComponent)
+            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            .setRequiresDeviceIdle(false)
+            .setRequiresCharging(false)
+            .setPersisted(true)
+
+        builder.run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                setRequiresBatteryNotLow(true)
+                setPeriodic(periodicInterval, periodicFlex)
+
+            } else {
+                setPeriodic(periodicInterval)
+            }
         }
+
+        return builder
     }
 }
