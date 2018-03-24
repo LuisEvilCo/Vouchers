@@ -27,6 +27,10 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="53d1a4ed62ba3f3dc1c1848ba8fa1ee1cf4be76a" />
+        <service android:name=".services.CheckBalanceService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            />
     </application>
 
 </manifest>

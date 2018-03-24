@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.helpers.NotificationsHelper
+import checker.util.luis.vouchers.helpers.SchedulerHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
 import checker.util.luis.vouchers.viewModel.BalanceViewModel
 import com.crashlytics.android.Crashlytics
@@ -26,7 +27,6 @@ import okhttp3.Request
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -58,31 +58,36 @@ class MainActivity : AppCompatActivity() {
             ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
         fab.setOnClickListener { _ ->
-            mNotificationsHelper.notify(
-                id = Random().nextInt(),
-                notification = mNotificationsHelper.getNotificationBalance(
-                    title = "title",
-                    body = "hey jude"
-                )
-            )
+            //            mNotificationsHelper.notify(
+//                id = Random().nextInt(),
+//                notification = mNotificationsHelper.getNotificationBalance(
+//                    title = "title",
+//                    body = "hey jude"
+//                )
+//            )
 
             var balanceEntity: BalanceEntity?
             doAsync {
-                val sharedPref: SharedPreferences = getSharedPreferences(getString(R.string.string_preference_file_key), Context.MODE_PRIVATE)
+                val sharedPref: SharedPreferences = getSharedPreferences(
+                    getString(R.string.string_preference_file_key),
+                    Context.MODE_PRIVATE
+                )
                 val card: String = sharedPref.getString(getString(R.string.card), "")
 
-                if(card.isNotEmpty()) {
+                if (card.isNotEmpty()) {
                     balanceEntity = VoucherClient.getBalanceEntity(card)
                     balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
                 }
             }
+            SchedulerHelper(this).scheduleJob()
         }
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = BalanceAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        mBalanceViewModel.getDesc().observe(this,
+        mBalanceViewModel.getDesc().observe(
+            this,
             Observer(adapter::updateAdapter)
         )
 
@@ -106,14 +111,14 @@ class MainActivity : AppCompatActivity() {
             mBalanceViewModel.delete(b2)
             Thread.sleep(delayMillis)
 
-            mBalanceViewModel.insert(b1,b2)
+            mBalanceViewModel.insert(b1, b2)
             Thread.sleep(delayMillis)
 
             mBalanceViewModel.deleteAll()
             Thread.sleep(delayMillis)
 
             mBalanceViewModel.insert(
-                listOf(b1,b2)
+                listOf(b1, b2)
             )
 
         }
