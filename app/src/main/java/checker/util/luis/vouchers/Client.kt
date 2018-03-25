@@ -40,7 +40,7 @@ object VoucherClient {
         return  result.tryExecute() ?: BalanceEntity(name = "", amount = "")
     }
 
-    fun getBalanceEntity(cardNumber: String) : BalanceEntity {
+    fun getBalanceEntity(cardNumber: String) : BalanceEntity? {
         val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
         val form = FormBody.Builder()
             .add("TARJETA", cardNumber)
@@ -51,7 +51,7 @@ object VoucherClient {
             .post(form)
             .build()
 
-        return result.tryExecute<BalanceEntity>() ?: BalanceEntity(name= "", amount = "")
+        return result.tryExecute<BalanceEntity>()
     }
 }
 

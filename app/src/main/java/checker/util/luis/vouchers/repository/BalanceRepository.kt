@@ -2,19 +2,28 @@ package checker.util.luis.vouchers.repository
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
+import android.content.Context
 import android.os.AsyncTask
+import android.util.Log
+import checker.util.luis.vouchers.R
+import checker.util.luis.vouchers.VoucherClient
 import checker.util.luis.vouchers.database.BalanceDatabase
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.utils.LiveDataUtil
+import org.jetbrains.anko.doAsync
 
 
 class BalanceRepository(application: Application) {
 
+    companion object {
+        private const val TAG = "balance_repository"
+    }
+
     private val db = BalanceDatabase.getDatabase(application)
     private val mBalanceDao: BalanceDao = db.balanceDao()
+    private val mContext: Context? = application.applicationContext
     val allRecords: LiveData<List<BalanceEntity>> = mBalanceDao.allRecords
-
 
     fun insert(vararg balance: BalanceEntity) {
         balance.forEach { record -> InsertAsyncTask(mBalanceDao).execute(record) }
@@ -29,10 +38,12 @@ class BalanceRepository(application: Application) {
     }
 
     fun getDesc(): LiveData<List<BalanceEntity>> {
+        mContext?.let { fetchData(it) } ?: Log.w(TAG,"null application context")
         return mBalanceDao.getDescendant()
     }
 
     fun getDesc(limit: Int): LiveData<List<BalanceEntity>> {
+        mContext?.let { fetchData(it) } ?: Log.w(TAG,"null application context")
         return mBalanceDao.getDescendant(limit)
     }
 
@@ -44,12 +55,33 @@ class BalanceRepository(application: Application) {
         mBalanceDao.deleteAll()
     }
 
-    fun addRecord(newRecord: BalanceEntity) {
-        val latest: List<BalanceEntity>? = LiveDataUtil
+    fun getLatest() : BalanceEntity? {
+        val list: List<BalanceEntity>? = LiveDataUtil
             .getValue(mBalanceDao.getDescendant(1))
-        latest?.let {
-            if (latest.isEmpty() || latest.first().hasChange(newRecord)) {
+        return list?.first()
+    }
+
+    fun addRecord(newRecord: BalanceEntity) { // TODO handle null 'latest' case
+        getLatest()?.let { it ->
+            if  (it.hasChange(newRecord)) {
                 this.insert(newRecord)
+            }
+        }?: this.insert(newRecord)
+    }
+
+
+    fun fetchData(context: Context) {
+        var balanceEntity: BalanceEntity?
+        doAsync {
+            val sharedPref = context.getSharedPreferences(
+                context.getString(R.string.string_preference_file_key),
+                Context.MODE_PRIVATE
+            )
+            val card: String = sharedPref.getString(context.getString(R.string.card), "")
+
+            if (card.isNotEmpty()) {
+                balanceEntity = VoucherClient.getBalanceEntity(card)
+                balanceEntity?.let { notNullCall -> addRecord(notNullCall) }
             }
         }
     }

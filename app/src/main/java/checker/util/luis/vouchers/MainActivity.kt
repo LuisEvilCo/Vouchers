@@ -67,61 +67,61 @@ class MainActivity : AppCompatActivity() {
 //            )
 
             var balanceEntity: BalanceEntity?
-            doAsync {
-                val sharedPref: SharedPreferences = getSharedPreferences(
-                    getString(R.string.string_preference_file_key),
-                    Context.MODE_PRIVATE
-                )
-                val card: String = sharedPref.getString(getString(R.string.card), "")
-
-                if (card.isNotEmpty()) {
-                    balanceEntity = VoucherClient.getBalanceEntity(card)
-                    balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
-                }
-            }
+//            doAsync {
+//                val sharedPref: SharedPreferences = getSharedPreferences(
+//                    getString(R.string.string_preference_file_key),
+//                    Context.MODE_PRIVATE
+//                )
+//                val card: String = sharedPref.getString(getString(R.string.card), "")
+//
+//                if (card.isNotEmpty()) {
+//                    balanceEntity = VoucherClient.getBalanceEntity(card)
+//                    balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
+//                }
+//            }
             SchedulerHelper(this).scheduleJob()
         }
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
-        val adapter = BalanceAdapter(this)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        mBalanceViewModel.getDesc().observe(
-            this,
-            Observer(adapter::updateAdapter)
-        )
-
-        doAsync {
-            val delayMillis = 1500L
-            mBalanceViewModel.deleteAll()
-            Thread.sleep(delayMillis)
-
-            val b1 = BalanceEntity(name = "test", amount = "hey jude")
-            mBalanceViewModel.insert(b1)
-            Thread.sleep(delayMillis)
-
-            mBalanceViewModel.delete(b1)
-            Thread.sleep(delayMillis)
-
-            val b2 = BalanceEntity(name = "hey", amount = "jude")
-            mBalanceViewModel.insert(b2)
-            Thread.sleep(delayMillis)
-
-            mBalanceViewModel.delete(b1)
-            mBalanceViewModel.delete(b2)
-            Thread.sleep(delayMillis)
-
-            mBalanceViewModel.insert(b1, b2)
-            Thread.sleep(delayMillis)
-
-            mBalanceViewModel.deleteAll()
-            Thread.sleep(delayMillis)
-
-            mBalanceViewModel.insert(
-                listOf(b1, b2)
-            )
-
-        }
+//        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+//        val adapter = BalanceAdapter(this)
+//        recyclerView.adapter = adapter
+//        recyclerView.layoutManager = LinearLayoutManager(this)
+//
+//        mBalanceViewModel.getDesc().observe(
+//            this,
+//            Observer(adapter::updateAdapter)
+//        )
+//
+//        doAsync {
+//            val delayMillis = 1500L
+//            mBalanceViewModel.deleteAll()
+//            Thread.sleep(delayMillis)
+//
+//            val b1 = BalanceEntity(name = "test", amount = "hey jude")
+//            mBalanceViewModel.insert(b1)
+//            Thread.sleep(delayMillis)
+//
+//            mBalanceViewModel.delete(b1)
+//            Thread.sleep(delayMillis)
+//
+//            val b2 = BalanceEntity(name = "hey", amount = "jude")
+//            mBalanceViewModel.insert(b2)
+//            Thread.sleep(delayMillis)
+//
+//            mBalanceViewModel.delete(b1)
+//            mBalanceViewModel.delete(b2)
+//            Thread.sleep(delayMillis)
+//
+//            mBalanceViewModel.insert(b1, b2)
+//            Thread.sleep(delayMillis)
+//
+//            mBalanceViewModel.deleteAll()
+//            Thread.sleep(delayMillis)
+//
+//            mBalanceViewModel.insert(
+//                listOf(b1, b2)
+//            )
+//
+//        }
 
 
     }

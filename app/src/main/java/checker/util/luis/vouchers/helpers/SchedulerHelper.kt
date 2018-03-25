@@ -31,6 +31,7 @@ class SchedulerHelper(val context: Context) {
 
     private fun getJobBuilder(): JobInfo.Builder {
         val builder = JobInfo.Builder(jobID, serviceComponent)
+            .setOverrideDeadline(1 * TimeUnit.MINUTES.toMillis(1))
             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
             .setRequiresDeviceIdle(false)
             .setRequiresCharging(false)
@@ -39,7 +40,7 @@ class SchedulerHelper(val context: Context) {
         builder.run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 setRequiresBatteryNotLow(true)
-                setPeriodic(periodicInterval, periodicFlex)
+                //setPeriodic(periodicInterval, periodicFlex)
 
             } else {
                 setPeriodic(periodicInterval)
