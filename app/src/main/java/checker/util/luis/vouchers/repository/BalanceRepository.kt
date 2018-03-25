@@ -61,8 +61,8 @@ class BalanceRepository(application: Application) {
         return list?.first()
     }
 
-    fun addRecord(newRecord: BalanceEntity) { // TODO handle null 'latest' case
-        getLatest()?.let { it ->
+    fun addRecord(newRecord: BalanceEntity) {
+        getLatest()?.let { it -> // here we have correct results
             if  (it.hasChange(newRecord)) {
                 this.insert(newRecord)
             }

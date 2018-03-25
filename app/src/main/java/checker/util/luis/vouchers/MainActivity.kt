@@ -27,6 +27,7 @@ import okhttp3.Request
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -58,40 +59,40 @@ class MainActivity : AppCompatActivity() {
             ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
         fab.setOnClickListener { _ ->
-            //            mNotificationsHelper.notify(
-//                id = Random().nextInt(),
-//                notification = mNotificationsHelper.getNotificationBalance(
-//                    title = "title",
-//                    body = "hey jude"
-//                )
-//            )
+            mNotificationsHelper.notify(
+                id = Random().nextInt(),
+                notificationBuilder = mNotificationsHelper.getNotificationBalance(
+                    title = "title",
+                    body = "hey jude"
+                )
+            )
 
             var balanceEntity: BalanceEntity?
-//            doAsync {
-//                val sharedPref: SharedPreferences = getSharedPreferences(
-//                    getString(R.string.string_preference_file_key),
-//                    Context.MODE_PRIVATE
-//                )
-//                val card: String = sharedPref.getString(getString(R.string.card), "")
-//
-//                if (card.isNotEmpty()) {
-//                    balanceEntity = VoucherClient.getBalanceEntity(card)
-//                    balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
-//                }
-//            }
+            doAsync {
+                val sharedPref: SharedPreferences = getSharedPreferences(
+                    getString(R.string.string_preference_file_key),
+                    Context.MODE_PRIVATE
+                )
+                val card: String = sharedPref.getString(getString(R.string.card), "")
+
+                if (card.isNotEmpty()) {
+                    balanceEntity = VoucherClient.getBalanceEntity(card)
+                    balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
+                }
+            }
             SchedulerHelper(this).scheduleJob()
         }
-//        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
-//        val adapter = BalanceAdapter(this)
-//        recyclerView.adapter = adapter
-//        recyclerView.layoutManager = LinearLayoutManager(this)
-//
-//        mBalanceViewModel.getDesc().observe(
-//            this,
-//            Observer(adapter::updateAdapter)
-//        )
-//
-//        doAsync {
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        val adapter = BalanceAdapter(this)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        mBalanceViewModel.getDesc().observe(
+            this,
+            Observer(adapter::updateAdapter)
+        )
+
+//        doAsync { just for testing
 //            val delayMillis = 1500L
 //            mBalanceViewModel.deleteAll()
 //            Thread.sleep(delayMillis)

@@ -38,7 +38,7 @@ class CheckBalanceService : JobService() {
 
         mRepository.fetchData(this) // triggering background job to update from the server
 
-        val latestRecord = mRepository.getLatest()
+        val latestRecord = mRepository.getLatest() // always null 
 
         val mNotificationBuilder = if ( latestRecord != null ) {
             mNotificationsHelper.getNotificationBalance(
