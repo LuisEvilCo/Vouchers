@@ -19,7 +19,7 @@ class SettingsActivity : AppCompatActivity() {
         private const val onBackDelay = 1000L //ms
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) { //TODO : ding into View Models
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         setSupportActionBar(toolbar)

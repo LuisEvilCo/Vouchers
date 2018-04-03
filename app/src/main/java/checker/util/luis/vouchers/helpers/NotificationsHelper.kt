@@ -45,14 +45,14 @@ internal class NotificationsHelper(context: Context) : ContextWrapper(context) {
     }
 
     /**
-     * Send a notification.
+     * Send a notificationBuilder.
      *
-     * @param id           The ID of the notification
+     * @param id           The ID of the notificationBuilder
      * *
-     * @param notification The notification object
+     * @param notificationBuilder The notificationBuilder object
      */
-    fun notify(id: Int, notification: Notification.Builder) {
-        mNotificationManager.notify(id, notification.build())
+    fun notify(id: Int, notificationBuilder: Notification.Builder) {
+        mNotificationManager.notify(id, notificationBuilder.build())
     }
 
 
