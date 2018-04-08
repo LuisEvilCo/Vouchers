@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
+    override fun onResume() { // TODO , consider re - binding the view model here
         val sharedPref: SharedPreferences = getSharedPreferences(
             getString(R.string.string_preference_file_key),
             Context.MODE_PRIVATE

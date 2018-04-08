@@ -68,7 +68,7 @@ internal class NotificationsHelper(context: Context) : ContextWrapper(context) {
      * *
      * @return A Notification.Builder configured with the selected channel and details
      */
-
+    @Suppress("DEPRECATION")
     fun getNotificationBalance(title: String, body: String): Notification.Builder {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(applicationContext, BALANCE_CHANNEL)
