@@ -30,9 +30,13 @@ interface BalanceDao {
 
     @Language("RoomSql")
     @Query("SELECT * FROM balance_history ORDER BY balance_history.lastUpdated DESC")
-    fun getDescendant(): LiveData<List<BalanceEntity>>
+    fun getDescendantAsync(): LiveData<List<BalanceEntity>>
 
     @Language("RoomSql")
     @Query("SELECT * FROM balance_history ORDER BY balance_history.lastUpdated DESC LIMIT :limit")
-    fun getDescendant(limit: Int): LiveData<List<BalanceEntity>>
+    fun getDescendantAsync(limit: Int): LiveData<List<BalanceEntity>>
+
+    @Language("RoomSql")
+    @Query("SELECT * FROM balance_history ORDER BY balance_history.lastUpdated DESC LIMIT :limit")
+    fun getDescendantSync(limit: Int): List<BalanceEntity>
 }

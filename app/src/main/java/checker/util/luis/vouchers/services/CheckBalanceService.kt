@@ -3,14 +3,22 @@ package checker.util.luis.vouchers.services
 import android.app.Service
 import android.app.job.JobParameters
 import android.app.job.JobService
-import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
+import android.util.Log
+import checker.util.luis.vouchers.R
+import checker.util.luis.vouchers.VoucherClient
+import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.repository.BalanceRepository
-import checker.util.luis.vouchers.viewModel.BalanceViewModel
+import org.jetbrains.anko.doAsync
 import java.util.*
 
 class CheckBalanceService : JobService() {
+
+    private companion object {
+        const val TAG = "CheckBalanceService"
+    }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         return Service.START_STICKY // vs START_NO_STICKY ?
@@ -27,38 +35,51 @@ class CheckBalanceService : JobService() {
             )
         )
 
+        // TODO, add fabric logging to this event
         return true
     }
 
     override fun onStartJob(params: JobParameters): Boolean {
 
-        val mNotificationsHelper = NotificationsHelper(this)
+        val mServiceContext = this
+        var balanceEntity: BalanceEntity?
 
-        val mRepository = BalanceRepository(application)
-
-        mRepository.fetchData(this) // triggering background job to update from the server
-
-        val latestRecord = mRepository.getLatest() // always null 
-
-        val mNotificationBuilder = if ( latestRecord != null ) {
-            mNotificationsHelper.getNotificationBalance(
-                title = latestRecord.amount,
-                body = latestRecord.name
+        doAsync {
+            val sharedPref = mServiceContext.getSharedPreferences(
+                mServiceContext.getString(R.string.string_preference_file_key),
+                Context.MODE_PRIVATE
             )
-        } else {
-            mNotificationsHelper.getNotificationBalance(
-                title = "empty record",
-                body = "oh oh"
-            )
+            val card: String = sharedPref.getString(mServiceContext.getString(R.string.card), "")
+
+            if (card.isNotEmpty()) {
+                balanceEntity = VoucherClient.getBalanceEntity(card)
+
+                balanceEntity?.let { netWorkData ->
+                    val mRepository = BalanceRepository(application)
+                    val latestRecord = mRepository.getLatest()
+
+                    if (latestRecord?.hasChange(netWorkData) == true) {
+                        mRepository.addRecord(netWorkData)
+                        val mNotificationsHelper = NotificationsHelper(mServiceContext)
+
+                        mRepository.addRecord(netWorkData)
+                        val mNotificationBuilder = mNotificationsHelper.getNotificationBalance(
+                            title = netWorkData.amount,
+                            body = netWorkData.name
+                        )
+                        mNotificationsHelper.notify(
+                            id = Random().nextInt(),
+                            notificationBuilder = mNotificationBuilder
+                        )
+                    } else {
+                        Log.d(TAG, "no change has been detected on the balance")
+                    }
+                } ?: Log.w(TAG, "no data fetched from the network")
+            }
         }
 
-        mNotificationsHelper.notify(
-            id = Random().nextInt(),
-            notificationBuilder = mNotificationBuilder
-        )
+        jobFinished(params, false)
 
-        jobFinished(params, true)
-
-        return false
+        return true // the doAsync block it's still going
     }
 }

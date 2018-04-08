@@ -38,7 +38,11 @@ class BalanceViewModel(application: Application) : AndroidViewModel(application)
         mRepository.deleteAll()
     }
 
-    fun addRecord(newRecord: BalanceEntity) {
+    fun addRecord(newRecord: BalanceEntity) { // TODO add test main thread execution
         mRepository.addRecord(newRecord)
+    }
+
+    fun fetchData(){
+        mRepository.fetchData(getApplication())
     }
 }

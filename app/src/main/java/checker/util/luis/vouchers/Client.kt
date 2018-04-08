@@ -1,6 +1,7 @@
 package checker.util.luis.vouchers
 
 import android.util.Log
+import checker.util.luis.vouchers.VoucherClient.TAG
 import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.utils.exception.BadRequestException
 import checker.util.luis.vouchers.utils.exception.InternalErrorException
@@ -12,6 +13,7 @@ import java.io.IOException
 
 
 object VoucherClient {
+    const val TAG = "VoucherClient"
     val VOUCHER_CLIENT = OkHttpClient.Builder()
         .addInterceptor{
             val original = it.request()
@@ -41,7 +43,8 @@ object VoucherClient {
     }
 
     fun getBalanceEntity(cardNumber: String) : BalanceEntity? {
-        val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
+        //val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
+        val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
         val form = FormBody.Builder()
             .add("TARJETA", cardNumber)
             .build()
@@ -74,7 +77,7 @@ private inline fun <reified T> Request.executeAsync() {
         .enqueue(
                 object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
-                        Log.d("Some error my friend", e.message)
+                        Log.d(TAG, e.message)
                     }
 
                     override fun onResponse(call: Call, response: Response) {
@@ -96,8 +99,8 @@ private inline fun <reified T> Request.executeAsync() {
 //                        }
 
                         when(T::class) {
-                            Int::class -> Log.d("HEY", "this is wrong")
-                            BalanceEntity:: class -> Log.d("HEY", "it worked ?")
+                            Int::class -> Log.d(TAG, "this is wrong")
+                            BalanceEntity:: class -> Log.d(TAG, "it worked ?")
                         }
                     }
                 }
@@ -121,7 +124,7 @@ private inline fun <reified T> Request.tryExecute() : T? {
             }
             return gson.fromJson(stream, T::class.java).apply { stream.close() }
         } catch (e : Exception){
-            Log.d("Some error my friend", e.message)
+            Log.d(TAG, e.message)
             return null
         }
 }
