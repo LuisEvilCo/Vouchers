@@ -53,7 +53,6 @@ class SchedulerHelper(val context: Context) {
                 setRequiresBatteryNotLow(true)
             }
         }
-
         return builder
     }
 
@@ -73,7 +72,6 @@ class SchedulerHelper(val context: Context) {
                 setPeriodic(periodicInterval)
             }
         }
-
         return builder
     }
 }

@@ -8,7 +8,6 @@ import android.content.Intent
 import android.util.Log
 import checker.util.luis.vouchers.R
 import checker.util.luis.vouchers.VoucherClient
-import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.repository.BalanceRepository
 import org.jetbrains.anko.doAsync
@@ -34,15 +33,12 @@ class CheckBalanceService : JobService() {
                 body = "bye"
             )
         )
-
         // TODO, add fabric logging to this event
         return true
     }
 
     override fun onStartJob(params: JobParameters): Boolean {
-
         val mServiceContext = this
-        var balanceEntity: BalanceEntity?
 
         doAsync {
             val sharedPref = mServiceContext.getSharedPreferences(
@@ -52,7 +48,7 @@ class CheckBalanceService : JobService() {
             val card: String = sharedPref.getString(mServiceContext.getString(R.string.card), "")
 
             if (card.isNotEmpty()) {
-                balanceEntity = VoucherClient.getBalanceEntity(card)
+                val balanceEntity = VoucherClient.getBalanceEntity(card)
 
                 balanceEntity?.let { netWorkData ->
                     val mRepository = BalanceRepository(application)

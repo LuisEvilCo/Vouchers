@@ -71,7 +71,6 @@ class BalanceRepository(application: Application) {
         } ?: this.insert(newRecord)
     }
 
-
     fun fetchData(context: Context) {
         var balanceEntity: BalanceEntity?
         doAsync {
