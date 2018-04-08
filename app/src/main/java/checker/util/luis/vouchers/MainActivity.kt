@@ -9,10 +9,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.helpers.SchedulerHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
@@ -21,13 +19,8 @@ import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.FormBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.singleTop
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -58,30 +51,6 @@ class MainActivity : AppCompatActivity() {
         val mBalanceViewModel: BalanceViewModel =
             ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
-        fab.setOnClickListener { _ ->
-            mNotificationsHelper.notify(
-                id = Random().nextInt(),
-                notificationBuilder = mNotificationsHelper.getNotificationBalance(
-                    title = "title",
-                    body = "hey jude"
-                )
-            )
-
-            var balanceEntity: BalanceEntity?
-            doAsync {
-                val sharedPref: SharedPreferences = getSharedPreferences(
-                    getString(R.string.string_preference_file_key),
-                    Context.MODE_PRIVATE
-                )
-                val card: String = sharedPref.getString(getString(R.string.card), "")
-
-                if (card.isNotEmpty()) {
-                    balanceEntity = VoucherClient.getBalanceEntity(card)
-                    balanceEntity?.let { notNullCall -> mBalanceViewModel.addRecord(notNullCall) }
-                }
-            }
-            SchedulerHelper(this).scheduleJob()
-        }
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
         val adapter = BalanceAdapter(this)
         recyclerView.adapter = adapter
@@ -92,38 +61,12 @@ class MainActivity : AppCompatActivity() {
             Observer(adapter::updateAdapter)
         )
 
-//        doAsync { just for testing
-//            val delayMillis = 1500L
-//            mBalanceViewModel.deleteAll()
-//            Thread.sleep(delayMillis)
-//
-//            val b1 = BalanceEntity(name = "test", amount = "hey jude")
-//            mBalanceViewModel.insert(b1)
-//            Thread.sleep(delayMillis)
-//
-//            mBalanceViewModel.delete(b1)
-//            Thread.sleep(delayMillis)
-//
-//            val b2 = BalanceEntity(name = "hey", amount = "jude")
-//            mBalanceViewModel.insert(b2)
-//            Thread.sleep(delayMillis)
-//
-//            mBalanceViewModel.delete(b1)
-//            mBalanceViewModel.delete(b2)
-//            Thread.sleep(delayMillis)
-//
-//            mBalanceViewModel.insert(b1, b2)
-//            Thread.sleep(delayMillis)
-//
-//            mBalanceViewModel.deleteAll()
-//            Thread.sleep(delayMillis)
-//
-//            mBalanceViewModel.insert(
-//                listOf(b1, b2)
-//            )
-//
-//        }
 
+        fab.setOnClickListener { _ ->
+            SchedulerHelper(this).schedulerSyncJob()
+        }
+
+        SchedulerHelper(this).schedulePeriodicJob()
 
     }
 
@@ -139,26 +82,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         super.onResume()
-    }
-
-    private fun doPost(cardNumber: String) {
-        val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
-        val client = OkHttpClient()
-
-        val form = FormBody.Builder()
-            .add("TARJETA", cardNumber)
-            .build()
-
-        val request = Request.Builder()
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .url(url)
-            .post(form)
-            .build()
-
-        val response = client.newCall(request).execute()
-
-        Log.d(TAG, response.body()?.string())
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

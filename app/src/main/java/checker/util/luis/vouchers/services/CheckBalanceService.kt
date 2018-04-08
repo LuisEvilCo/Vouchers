@@ -3,11 +3,10 @@ package checker.util.luis.vouchers.services
 import android.app.Service
 import android.app.job.JobParameters
 import android.app.job.JobService
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.repository.BalanceRepository
-import checker.util.luis.vouchers.viewModel.BalanceViewModel
+import org.jetbrains.anko.doAsync
 import java.util.*
 
 class CheckBalanceService : JobService() {
@@ -27,38 +26,39 @@ class CheckBalanceService : JobService() {
             )
         )
 
+        // TODO, add fabric logging to this event
         return true
     }
 
     override fun onStartJob(params: JobParameters): Boolean {
 
-        val mNotificationsHelper = NotificationsHelper(this)
+        val mServiceContext = this
 
-        val mRepository = BalanceRepository(application)
+        doAsync {
+            val mNotificationsHelper = NotificationsHelper(mServiceContext)
 
-        mRepository.fetchData(this) // triggering background job to update from the server
+            val mRepository = BalanceRepository(application)
 
-        val latestRecord = mRepository.getLatest() // always null 
+            mRepository.fetchData(mServiceContext) // triggering network call / db update
 
-        val mNotificationBuilder = if ( latestRecord != null ) {
-            mNotificationsHelper.getNotificationBalance(
-                title = latestRecord.amount,
-                body = latestRecord.name
-            )
-        } else {
-            mNotificationsHelper.getNotificationBalance(
-                title = "empty record",
-                body = "oh oh"
-            )
+            val latestRecord = mRepository.getLatest()
+
+            if(latestRecord != null) {
+                val mNotificationBuilder = mNotificationsHelper.getNotificationBalance(
+                    title = latestRecord.amount,
+                    body = latestRecord.name
+                )
+                mNotificationsHelper.notify(
+                    id = Random().nextInt(),
+                    notificationBuilder = mNotificationBuilder
+                )
+            } else {
+                // TODO , add fabric logging of this event
+            }
         }
 
-        mNotificationsHelper.notify(
-            id = Random().nextInt(),
-            notificationBuilder = mNotificationBuilder
-        )
+        jobFinished(params, false)
 
-        jobFinished(params, true)
-
-        return false
+        return true // the doAsync block it's still going
     }
 }

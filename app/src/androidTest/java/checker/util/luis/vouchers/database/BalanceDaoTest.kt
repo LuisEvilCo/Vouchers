@@ -258,7 +258,7 @@ class BalanceDaoTest : DbTest() {
         inMemoryDb.balanceDao().insert(balance1, balance2, balance3)
 
         val readData = LiveDataTestUtil.getValue(
-            inMemoryDb.balanceDao().getDescendant()
+            inMemoryDb.balanceDao().getDescendantAsync()
         )
 
         assertNotNull(readData)
@@ -368,7 +368,7 @@ class BalanceDaoTest : DbTest() {
         inMemoryDb.balanceDao().insert(balance1, balance2, balance3, balance4)
 
         val readData = LiveDataTestUtil.getValue(
-            inMemoryDb.balanceDao().getDescendant(2)
+            inMemoryDb.balanceDao().getDescendantAsync(2)
         )
 
         assertNotNull(readData)

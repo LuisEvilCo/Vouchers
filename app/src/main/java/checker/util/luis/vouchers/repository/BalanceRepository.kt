@@ -10,7 +10,6 @@ import checker.util.luis.vouchers.VoucherClient
 import checker.util.luis.vouchers.database.BalanceDatabase
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
-import checker.util.luis.vouchers.utils.LiveDataUtil
 import org.jetbrains.anko.doAsync
 
 
@@ -39,12 +38,12 @@ class BalanceRepository(application: Application) {
 
     fun getDesc(): LiveData<List<BalanceEntity>> {
         mContext?.let { fetchData(it) } ?: Log.w(TAG,"null application context")
-        return mBalanceDao.getDescendant()
+        return mBalanceDao.getDescendantAsync()
     }
 
     fun getDesc(limit: Int): LiveData<List<BalanceEntity>> {
         mContext?.let { fetchData(it) } ?: Log.w(TAG,"null application context")
-        return mBalanceDao.getDescendant(limit)
+        return mBalanceDao.getDescendantAsync(limit)
     }
 
     fun delete(balance: BalanceEntity) {
@@ -56,17 +55,20 @@ class BalanceRepository(application: Application) {
     }
 
     fun getLatest() : BalanceEntity? {
-        val list: List<BalanceEntity>? = LiveDataUtil
-            .getValue(mBalanceDao.getDescendant(1))
-        return list?.first()
+        val list: List<BalanceEntity> = mBalanceDao.getDescendantSync(1)
+        return if (list.isNotEmpty()) {
+            list.first()
+        }else {
+            null
+        }
     }
 
     fun addRecord(newRecord: BalanceEntity) {
-        getLatest()?.let { it -> // here we have correct results
-            if  (it.hasChange(newRecord)) {
+        getLatest()?.let { it ->
+            if (it.hasChange(newRecord)) {
                 this.insert(newRecord)
             }
-        }?: this.insert(newRecord)
+        } ?: this.insert(newRecord)
     }
 
 

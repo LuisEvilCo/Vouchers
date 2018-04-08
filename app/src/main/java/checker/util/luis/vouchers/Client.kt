@@ -41,7 +41,8 @@ object VoucherClient {
     }
 
     fun getBalanceEntity(cardNumber: String) : BalanceEntity? {
-        val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
+        //val url = "https://demo7473136.mockable.io/finutil" // "{\"nombre\":\"Luis\",\n \"value\":\"89.99\"}"
+        val url = "https://bd.finutil.com.mx:6443/FinutilSite/rest/cSaldos/actual"
         val form = FormBody.Builder()
             .add("TARJETA", cardNumber)
             .build()
