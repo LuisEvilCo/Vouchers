@@ -16,7 +16,6 @@ import checker.util.luis.vouchers.helpers.SchedulerHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
 import checker.util.luis.vouchers.viewModel.BalanceViewModel
 import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.intentFor
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set up Crashlytics, disabled for debug builds
         val crashlyticsKit = Crashlytics.Builder()
-            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+            //.core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
             .build()
 
         // Initialize Fabric with the debug-disabled crashlytics.
