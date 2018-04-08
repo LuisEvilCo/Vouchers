@@ -26,9 +26,11 @@ class SettingsActivity : AppCompatActivity() {
 
         val versionName = versionName as TextView
         val versionCode = versionCode as TextView
+        val packageName = packageNameText as TextView
 
         versionName.text = "Name : ${BuildConfig.VERSION_NAME}"
         versionCode.text = "Code : ${BuildConfig.VERSION_CODE}"
+        packageName.text = this.applicationContext.packageName
 
         val cardEditText = editTextCard as EditText
 

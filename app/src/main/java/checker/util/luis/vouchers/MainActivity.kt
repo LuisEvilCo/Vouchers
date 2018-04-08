@@ -45,7 +45,11 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         // Initialize Fabric with the debug-disabled crashlytics.
-        Fabric.with(this, crashlyticsKit)
+        val fabricConfig = Fabric.Builder(this)
+            .kits(crashlyticsKit)
+            .debuggable(true)
+            .build()
+        Fabric.with(fabricConfig)
 
         // Have the View Model ready for onClickListeners
         val mBalanceViewModel: BalanceViewModel =

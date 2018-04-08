@@ -10,6 +10,8 @@ import checker.util.luis.vouchers.R
 import checker.util.luis.vouchers.VoucherClient
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.repository.BalanceRepository
+import com.crashlytics.android.answers.Answers
+import com.crashlytics.android.answers.CustomEvent
 import org.jetbrains.anko.doAsync
 import java.util.*
 
@@ -69,8 +71,9 @@ class CheckBalanceService : JobService() {
                         )
                     } else {
                         Log.d(TAG, "no change has been detected on the balance")
+                        Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change","no change"))
                     }
-                } ?: Log.w(TAG, "no data fetched from the network")
+                } ?: Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change", "network fail"))
             }
         }
 
