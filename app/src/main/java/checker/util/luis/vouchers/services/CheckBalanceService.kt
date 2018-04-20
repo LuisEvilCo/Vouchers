@@ -26,16 +26,7 @@ class CheckBalanceService : JobService() {
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
-        val mNotificationsHelper = NotificationsHelper(this)
-
-        mNotificationsHelper.notify(
-            id = Random().nextInt(),
-            notificationBuilder = mNotificationsHelper.getNotificationBalance(
-                title = "onStopJob",
-                body = "bye"
-            )
-        )
-        // TODO, add fabric logging to this event
+        Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("onStop","Job Stopped"))
         return true
     }
 
@@ -57,6 +48,7 @@ class CheckBalanceService : JobService() {
                     val latestRecord = mRepository.getLatest()
 
                     if (latestRecord?.hasChange(netWorkData) == true) {
+                        Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change","updated balance"))
                         mRepository.addRecord(netWorkData)
                         val mNotificationsHelper = NotificationsHelper(mServiceContext)
 

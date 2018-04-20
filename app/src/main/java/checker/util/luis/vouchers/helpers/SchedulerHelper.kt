@@ -35,7 +35,7 @@ class SchedulerHelper(val context: Context) {
     fun schedulePeriodicJob() {
         val jobService = (context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler)
         val builder = getPeriodicJobBuilder()
-        Log.d(TAG, "Scheduling Periodic Job") // TODO  log this to fabric ?
+        Log.d(TAG, "Scheduling Periodic Job")
         jobService.schedule(builder.build())
         Log.d(TAG, jobService.allPendingJobs.size.toString())
     }

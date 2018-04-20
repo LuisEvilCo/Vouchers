@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.animation.AnimationUtils
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.helpers.SchedulerHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener { _ ->
             SchedulerHelper(this).schedulerSyncJob()
+            fab.startAnimation(AnimationUtils.loadAnimation(applicationContext, R.anim.rotate))
         }
 
         SchedulerHelper(this).schedulePeriodicJob()
