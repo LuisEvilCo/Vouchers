@@ -7,9 +7,13 @@ import android.os.AsyncTask
 import android.util.Log
 import checker.util.luis.vouchers.R
 import checker.util.luis.vouchers.VoucherClient
+import checker.util.luis.vouchers.api.ApiResponse
 import checker.util.luis.vouchers.database.BalanceDatabase
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
+import checker.util.luis.vouchers.utils.AbsentLiveData
+import checker.util.luis.vouchers.vo.AppExecutors
+import checker.util.luis.vouchers.vo.Resource
 import org.jetbrains.anko.doAsync
 
 
@@ -93,5 +97,33 @@ class BalanceRepository(application: Application) {
             params.forEach { it -> mAsyncTaskDao.insert(it) }
             return null
         }
+    }
+
+
+    // Network Bound Resources
+
+    fun getDescResource(): LiveData<Resource<List<BalanceEntity>>> {
+        return object : NetworkBoundResource<List<BalanceEntity>, Boolean>(AppExecutors.getInstance()) {
+            override fun saveCallResult(item: Boolean) {
+                // db save
+                TODO("not implemented")
+            }
+
+            override fun shouldFetch(data: List<BalanceEntity>?): Boolean {
+                // individually decide if we should go to network depending on request type
+                TODO("not implemented")
+            }
+
+            override fun loadFromDb(): LiveData<List<BalanceEntity>> {
+                // db read
+                TODO("not implemented")
+            }
+
+            override fun createCall(): LiveData<ApiResponse<Boolean>> {
+                // network api call
+
+                return AbsentLiveData.create()
+            }
+        }.asLiveData()
     }
 }

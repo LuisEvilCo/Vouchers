@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
@@ -16,6 +17,7 @@ import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.helpers.SchedulerHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
 import checker.util.luis.vouchers.viewModel.BalanceViewModel
+import checker.util.luis.vouchers.vo.Status
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
@@ -61,9 +63,28 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        mBalanceViewModel.getDesc().observe(
+//        mBalanceViewModel.getDesc().observe(
+//            this,
+//            Observer(adapter::updateAdapter)
+//        )
+
+        mBalanceViewModel.getDescResource().observe(
             this,
-            Observer(adapter::updateAdapter)
+            Observer { response ->
+                response?.let { resource ->
+                    when (resource.status) {
+                        Status.LOADING -> {
+                            // decide if we should display loading screen
+                        }
+                        Status.ERROR -> {
+                            // show error
+                        }
+                        Status.SUCCESS -> {
+                            adapter.updateAdapter(resource.data)
+                        }
+                    }
+                } ?: Log.e(TAG, "Null response")
+            }
         )
 
 
