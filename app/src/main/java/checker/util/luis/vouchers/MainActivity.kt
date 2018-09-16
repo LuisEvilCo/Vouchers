@@ -63,11 +63,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-//        mBalanceViewModel.getDesc().observe(
-//            this,
-//            Observer(adapter::updateAdapter)
-//        )
-
         mBalanceViewModel.getDescResource().observe(
             this,
             Observer { response ->

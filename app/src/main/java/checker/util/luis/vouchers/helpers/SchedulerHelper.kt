@@ -50,7 +50,7 @@ class SchedulerHelper(val context: Context) {
 
         builder.run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                setRequiresBatteryNotLow(true)
+                setRequiresBatteryNotLow(false)
             }
         }
         return builder

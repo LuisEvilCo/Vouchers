@@ -5,8 +5,8 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
+import checker.util.luis.vouchers.NetworkClient
 import checker.util.luis.vouchers.R
-import checker.util.luis.vouchers.VoucherClient
 import checker.util.luis.vouchers.api.ApiResponse
 import checker.util.luis.vouchers.database.BalanceDatabase
 import checker.util.luis.vouchers.database.dao.BalanceDao
@@ -14,7 +14,6 @@ import checker.util.luis.vouchers.database.entity.BalanceEntity
 import checker.util.luis.vouchers.utils.AbsentLiveData
 import checker.util.luis.vouchers.vo.AppExecutors
 import checker.util.luis.vouchers.vo.Resource
-import org.jetbrains.anko.doAsync
 
 
 class BalanceRepository(application: Application) {
@@ -26,6 +25,7 @@ class BalanceRepository(application: Application) {
     private val db = BalanceDatabase.getDatabase(application)
     private val mBalanceDao: BalanceDao = db.balanceDao()
     private val mContext: Context? = application.applicationContext
+    private val networkClient = NetworkClient.api
     val allRecords: LiveData<List<BalanceEntity>> = mBalanceDao.allRecords
 
     fun insert(vararg balance: BalanceEntity) {
@@ -38,16 +38,6 @@ class BalanceRepository(application: Application) {
 
     fun getByName(nameString: String): LiveData<List<BalanceEntity>> {
         return mBalanceDao.getByName(nameString)
-    }
-
-    fun getDesc(): LiveData<List<BalanceEntity>> {
-        mContext?.let { fetchData(it) } ?: Log.w(TAG,"null application context")
-        return mBalanceDao.getDescendantAsync()
-    }
-
-    fun getDesc(limit: Int): LiveData<List<BalanceEntity>> {
-        mContext?.let { fetchData(it) } ?: Log.w(TAG,"null application context")
-        return mBalanceDao.getDescendantAsync(limit)
     }
 
     fun delete(balance: BalanceEntity) {
@@ -75,22 +65,6 @@ class BalanceRepository(application: Application) {
         } ?: this.insert(newRecord)
     }
 
-    fun fetchData(context: Context) {
-        var balanceEntity: BalanceEntity?
-        doAsync {
-            val sharedPref = context.getSharedPreferences(
-                context.getString(R.string.string_preference_file_key),
-                Context.MODE_PRIVATE
-            )
-            val card: String = sharedPref.getString(context.getString(R.string.card), "")
-
-            if (card.isNotEmpty()) {
-                balanceEntity = VoucherClient.getBalanceEntity(card)
-                balanceEntity?.let { notNullCall -> addRecord(notNullCall) }
-            }
-        }
-    }
-
     private class InsertAsyncTask internal constructor(private val mAsyncTaskDao: BalanceDao) :
         AsyncTask<BalanceEntity, Void, Void>() {
         override fun doInBackground(vararg params: BalanceEntity): Void? {
@@ -100,28 +74,35 @@ class BalanceRepository(application: Application) {
     }
 
 
-    // Network Bound Resources
-
+    // Network Bound Resource
     fun getDescResource(): LiveData<Resource<List<BalanceEntity>>> {
-        return object : NetworkBoundResource<List<BalanceEntity>, Boolean>(AppExecutors.getInstance()) {
-            override fun saveCallResult(item: Boolean) {
-                // db save
-                TODO("not implemented")
+        return object : NetworkBoundResource<List<BalanceEntity>, BalanceEntity>(AppExecutors.getInstance()) {
+            override fun saveCallResult(item: BalanceEntity) {
+                addRecord(item)
             }
 
             override fun shouldFetch(data: List<BalanceEntity>?): Boolean {
                 // individually decide if we should go to network depending on request type
-                TODO("not implemented")
+                return true
             }
 
             override fun loadFromDb(): LiveData<List<BalanceEntity>> {
                 // db read
-                TODO("not implemented")
+                return mBalanceDao.getDescendantAsync()
             }
 
-            override fun createCall(): LiveData<ApiResponse<Boolean>> {
-                // network api call
-
+            override fun createCall(): LiveData<ApiResponse<BalanceEntity>> {
+                mContext?.let {
+                    val sharedPref = mContext.getSharedPreferences(
+                        mContext.getString(R.string.string_preference_file_key),
+                        Context.MODE_PRIVATE
+                    )
+                    val card: String = sharedPref.getString(mContext.getString(R.string.card), "")
+                    if (card.isNotEmpty()) {
+                        return networkClient.getBalanceEntity(card)
+                    }
+                }
+                Log.e(TAG, "Could not get app context")
                 return AbsentLiveData.create()
             }
         }.asLiveData()
