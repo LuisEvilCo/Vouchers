@@ -9,7 +9,7 @@ import checker.util.luis.vouchers.vo.AppExecutors
 import checker.util.luis.vouchers.vo.Resource
 
 abstract class NetworkBoundResource<ResultType, RequestType> @MainThread
-internal constructor(private val appExecutors: AppExecutors){
+internal constructor(private val appExecutors: AppExecutors) {
 
     private val result = MediatorLiveData<Resource<ResultType>>()
 
@@ -17,12 +17,12 @@ internal constructor(private val appExecutors: AppExecutors){
         result.value = Resource.loading(null)
         @Suppress("LeakingThis")
         val dbSource = loadFromDb()
-        result.addSource(dbSource) {data ->
+        result.addSource(dbSource) { data ->
             result.removeSource(dbSource)
-            if(shouldFetch(data)) {
+            if (shouldFetch(data)) {
                 fetchFromNetwork(dbSource)
             } else {
-                result.addSource(dbSource) { newData -> setValue(Resource.success(newData))}
+                result.addSource(dbSource) { newData -> setValue(Resource.success(newData)) }
             }
         }
     }
@@ -64,12 +64,19 @@ internal constructor(private val appExecutors: AppExecutors){
                 onFetchFailed()
                 result.addSource(
                     dbSource
-                ) { newData -> setValue(Resource.error(response?.errorMessage ?: "empty response", newData)) }
+                ) { newData ->
+                    setValue(
+                        Resource.error(
+                            response?.errorMessage ?: "empty response",
+                            newData
+                        )
+                    )
+                }
             }
         }
     }
 
-    protected open fun onFetchFailed() { }
+    protected open fun onFetchFailed() {}
 
     fun asLiveData(): LiveData<Resource<ResultType>> {
         return result

@@ -1,6 +1,7 @@
-package checker.util.luis.vouchers
+package checker.util.luis.vouchers.network
 
 import android.util.Log
+import checker.util.luis.vouchers.BuildConfig
 import checker.util.luis.vouchers.api.VouchersApi
 import checker.util.luis.vouchers.factories.LiveDataCallAdapterFactory
 import com.google.gson.GsonBuilder
@@ -15,7 +16,7 @@ class NetworkClient private constructor() {
 
     init {
 
-        Log.d( LOG_TAG, " Creating Network Client ")
+        Log.d(LOG_TAG, " Creating Network Client ")
 
         val gson = GsonBuilder()
             //.setDateFormat() // TODO : figure this out

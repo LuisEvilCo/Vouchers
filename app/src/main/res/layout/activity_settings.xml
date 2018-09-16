@@ -5,7 +5,7 @@
     android:id="@+id/activity_Settings_Coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="checker.util.luis.vouchers.SettingsActivity">
+    tools:context="checker.util.luis.vouchers.activities.SettingsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
