@@ -7,9 +7,9 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import android.os.AsyncTask
+import checker.util.luis.vouchers.database.typeConverters.CustomTypeConverters
 import checker.util.luis.vouchers.database.dao.BalanceDao
 import checker.util.luis.vouchers.database.entity.BalanceEntity
-import checker.util.luis.vouchers.database.entity.CustomTypeConverters
 
 
 @Database(entities = [(BalanceEntity::class)], version = 1)
