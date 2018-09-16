@@ -10,8 +10,6 @@ import checker.util.luis.vouchers.R
 import checker.util.luis.vouchers.VoucherClient
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.repository.BalanceRepository
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.CustomEvent
 import org.jetbrains.anko.doAsync
 import java.util.*
 
@@ -26,7 +24,7 @@ class CheckBalanceService : JobService() {
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
-        Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("onStop","Job Stopped"))
+        //Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("onStop","Job Stopped"))
         return true
     }
 
@@ -47,25 +45,36 @@ class CheckBalanceService : JobService() {
                     val mRepository = BalanceRepository(application)
                     val latestRecord = mRepository.getLatest()
 
-                    if (latestRecord?.hasChange(netWorkData) == true) {
-                        Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change","updated balance"))
-                        mRepository.addRecord(netWorkData)
-                        val mNotificationsHelper = NotificationsHelper(mServiceContext)
+                    mRepository.addRecord(netWorkData)
 
-                        mRepository.addRecord(netWorkData)
+                    val mNotificationsHelper = NotificationsHelper(mServiceContext)
+
+                    if (latestRecord?.hasChange(netWorkData) == true) {
                         val mNotificationBuilder = mNotificationsHelper.getNotificationBalance(
                             title = netWorkData.amount,
                             body = netWorkData.name
                         )
+
                         mNotificationsHelper.notify(
                             id = Random().nextInt(),
                             notificationBuilder = mNotificationBuilder
                         )
                     } else {
                         Log.d(TAG, "no change has been detected on the balance")
-                        Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change","no change"))
+
+                        latestRecord?.let { db ->
+                            val mNotificationBuilder = mNotificationsHelper.getNotificationBalance(
+                                title = db.amount,
+                                body = db.name
+                            )
+
+                            mNotificationsHelper.notify(
+                                id = 42,
+                                notificationBuilder = mNotificationBuilder
+                            )
+                        }
                     }
-                } ?: Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change", "network fail"))
+                } //?: Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change", "network fail"))
             }
         }
 

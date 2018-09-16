@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
+import checker.util.luis.vouchers.activities.SettingsActivity
 import checker.util.luis.vouchers.helpers.NotificationsHelper
 import checker.util.luis.vouchers.helpers.SchedulerHelper
 import checker.util.luis.vouchers.recyclerView.BalanceAdapter
@@ -28,7 +29,6 @@ import org.jetbrains.anko.singleTop
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mNotificationsHelper: NotificationsHelper
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         // Setting up the notificationsHelper
-        mNotificationsHelper = NotificationsHelper(this)
+        NotificationsHelper(this)
 
         // Set up Crashlytics, disabled for debug builds
         val crashlyticsKit = Crashlytics.Builder()
@@ -54,11 +54,26 @@ class MainActivity : AppCompatActivity() {
             .build()
         Fabric.with(fabricConfig)
 
+        SchedulerHelper(this).schedulePeriodicJob()
+
+    }
+
+    override fun onResume() { // TODO , consider re - binding the view model here
+        val sharedPref: SharedPreferences = getSharedPreferences(
+            getString(R.string.string_preference_file_key),
+            Context.MODE_PRIVATE
+        )
+        val card: String = sharedPref.getString(getString(R.string.card), "")
+
+        if (card.isEmpty()) {
+            startActivity(intentFor<SettingsActivity>().singleTop())
+        }
+
         // Have the View Model ready for onClickListeners
         val mBalanceViewModel: BalanceViewModel =
             ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val adapter = BalanceAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -86,21 +101,6 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { _ ->
             SchedulerHelper(this).schedulerSyncJob()
             fab.startAnimation(AnimationUtils.loadAnimation(applicationContext, R.anim.rotate))
-        }
-
-        SchedulerHelper(this).schedulePeriodicJob()
-
-    }
-
-    override fun onResume() { // TODO , consider re - binding the view model here
-        val sharedPref: SharedPreferences = getSharedPreferences(
-            getString(R.string.string_preference_file_key),
-            Context.MODE_PRIVATE
-        )
-        val card: String = sharedPref.getString(getString(R.string.card), "")
-
-        if (card.isEmpty()) {
-            startActivity(intentFor<SettingsActivity>().singleTop())
         }
 
         super.onResume()

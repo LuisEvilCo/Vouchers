@@ -1,4 +1,4 @@
-package checker.util.luis.vouchers
+package checker.util.luis.vouchers.activities
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import checker.util.luis.vouchers.BuildConfig
+import checker.util.luis.vouchers.R
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.content_settings.*
 import org.jetbrains.anko.design.longSnackbar

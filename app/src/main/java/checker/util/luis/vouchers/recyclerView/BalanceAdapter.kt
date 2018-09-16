@@ -8,23 +8,23 @@ import android.view.ViewGroup
 import android.widget.TextView
 import checker.util.luis.vouchers.R
 import checker.util.luis.vouchers.database.entity.BalanceEntity
-import kotlinx.android.synthetic.main.recyclerview_item.view.*
+import kotlinx.android.synthetic.main.item_row.view.*
 
 class BalanceAdapter constructor(context: Context) : RecyclerView.Adapter<BalanceAdapter.BalanceViewHolder>() {
 
     inner class BalanceViewHolder constructor(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
-        val balanceName: TextView = itemView.recycler_textView_name
-        val balanceAmount : TextView = itemView.recycler_textView_amount
-        val balanceDate : TextView = itemView.recycler_textView_date
+        val balanceName: TextView = itemView.card_name
+        val balanceAmount : TextView = itemView.card_amount
+        val balanceDate : TextView = itemView.card_date
     }
 
     // Adapter vars, we use this joined assignment as constructor
     private val mInflater : LayoutInflater = LayoutInflater.from(context)
     private var mBalance : List<BalanceEntity>? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): BalanceViewHolder {
-        val itemView = mInflater.inflate(R.layout.recyclerview_item, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BalanceViewHolder {
+        val itemView = mInflater.inflate(R.layout.item_row, parent, false)
         return BalanceViewHolder(itemView)
     }
 

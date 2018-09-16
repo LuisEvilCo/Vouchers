@@ -52,7 +52,7 @@ inline fun <reified T : Any> JsonElement?.deserializeSafe(
 ): T {
     this ?: return provider(this)
 
-    return if (predicate(this) ?: false) { // TODO replace with equality check ?
+    return if (predicate(this) == true) { // TODO replace with equality check ?
         context.deserialize(this, T::class.java)
     } else {
         provider(this)

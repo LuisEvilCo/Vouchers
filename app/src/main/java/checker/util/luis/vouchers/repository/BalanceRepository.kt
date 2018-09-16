@@ -5,7 +5,7 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
-import checker.util.luis.vouchers.NetworkClient
+import checker.util.luis.vouchers.network.NetworkClient
 import checker.util.luis.vouchers.R
 import checker.util.luis.vouchers.api.ApiResponse
 import checker.util.luis.vouchers.database.BalanceDatabase
