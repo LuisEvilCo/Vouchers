@@ -17,10 +17,10 @@ ext.anko_version = '0.10.4'
 ext.archLifecycleVersion = '1.1.1'
 ext.room_version = '1.1.1'
 ext.support_runner = '1.0.1'
-ext.support_lib_version = '26.1.0'
+ext.support_lib_version = '27.1.1'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "checker.util.luis.vouchers"
         minSdkVersion 21
@@ -83,6 +83,8 @@ dependencies {
     // Retrofit
     compile "com.squareup.retrofit2:retrofit:2.3.0"
     implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    // Card View
+    compile group: 'com.android.support', name: 'cardview-v7', version: '27.1.1'
     // Testing
     testCompile "com.android.support.test:runner:$support_runner"
     testCompile "org.assertj:assertj-core:1.7.1"

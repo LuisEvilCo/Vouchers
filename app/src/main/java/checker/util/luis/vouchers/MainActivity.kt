@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         val mBalanceViewModel: BalanceViewModel =
             ViewModelProviders.of(this)[BalanceViewModel::class.java]
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val adapter = BalanceAdapter(this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
