@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
+import android.widget.Switch
 import android.widget.TextView
 import checker.util.luis.vouchers.BuildConfig
 import checker.util.luis.vouchers.R
+import checker.util.luis.vouchers.utils.CreditCardFormatTextWatcher
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.android.synthetic.main.content_settings.*
 import org.jetbrains.anko.design.longSnackbar
@@ -35,6 +37,7 @@ class SettingsActivity : AppCompatActivity() {
         packageName.text = this.applicationContext.packageName
 
         val cardEditText = editTextCard as EditText
+        val devSwitch = devSwitch as Switch
 
         val sharedPref: SharedPreferences = getSharedPreferences(
             getString(R.string.string_preference_file_key),
@@ -42,17 +45,27 @@ class SettingsActivity : AppCompatActivity() {
         )
         val card: String = sharedPref.getString(getString(R.string.card), "")
 
+        val watcher = CreditCardFormatTextWatcher(cardEditText)
+        cardEditText.addTextChangedListener(watcher)
+
         cardEditText.setText(card)
+
+        val dev: Boolean = sharedPref.getBoolean(getString(R.string.devSwitch), false)
+
+        devSwitch.isChecked = dev
 
         fabSettings.setOnClickListener { view ->
 
             val cardString = cardEditText.text.toString()
+
+            val devSwitchState = devSwitch.isChecked
 
             if (cardString.isEmpty()) {
                 this.onBackPressed()
             } else {
                 val editor: SharedPreferences.Editor = sharedPref.edit()
                 editor.putString(getString(R.string.card), cardString)
+                editor.putBoolean(getString(R.string.devSwitch), devSwitchState)
                 editor.apply()
 
                 snackbar(view, "Saved")
@@ -80,8 +93,10 @@ class SettingsActivity : AppCompatActivity() {
 
             if (!cardString.isEmpty()) {
 
+                val switchState = (devSwitch as Switch).isChecked
                 val editor: SharedPreferences.Editor = sharedPref.edit()
                 editor.putString(getString(R.string.card), cardString)
+                editor.putBoolean(getString(R.string.devSwitch), switchState)
                 editor.apply()
 
                 snackbar(coordinatorView, getString(R.string.autoSaving))

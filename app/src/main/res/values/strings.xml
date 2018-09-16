@@ -3,6 +3,7 @@
     <string name="title_activity_settings">Card Info</string>
     <string name="string_preference_file_key">vouchersPreferences</string>
     <string name="card">Card</string>
+    <string name="devSwitch">devSwitch</string>
 
     <!-- Notifications channel -->
 
@@ -12,4 +13,7 @@
     <string name="card_info">Please fill your card info</string>
     <string name="autoSaving">Auto saving…</string>
     <string name="discarding_changes">Discarding changes</string>
+
+
+    <string name="dev">Dev </string>
 </resources>

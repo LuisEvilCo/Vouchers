@@ -62,16 +62,24 @@ class CheckBalanceService : JobService() {
                     } else {
                         Log.d(TAG, "no change has been detected on the balance")
 
-                        latestRecord?.let { db ->
-                            val mNotificationBuilder = mNotificationsHelper.getNotificationBalance(
-                                title = db.amount,
-                                body = db.name
-                            )
+                        val dev = sharedPref.getBoolean(
+                            mServiceContext.getString(R.string.devSwitch),
+                            false
+                        )
 
-                            mNotificationsHelper.notify(
-                                id = 42,
-                                notificationBuilder = mNotificationBuilder
-                            )
+                        if (dev) {
+                            latestRecord?.let { db ->
+                                val mNotificationBuilder =
+                                    mNotificationsHelper.getNotificationBalance(
+                                        title = db.amount,
+                                        body = db.name
+                                    )
+
+                                mNotificationsHelper.notify(
+                                    id = 42,
+                                    notificationBuilder = mNotificationBuilder
+                                )
+                            }
                         }
                     }
                 } //?: Answers.getInstance().logCustom(CustomEvent(TAG).putCustomAttribute("change", "network fail"))
