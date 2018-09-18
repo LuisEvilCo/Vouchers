@@ -12,6 +12,7 @@ import okhttp3.*
 import java.io.IOException
 
 
+@Deprecated("Use NetworkClient Instead")
 object VoucherClient {
     const val TAG = "VoucherClient"
     val VOUCHER_CLIENT = OkHttpClient.Builder()
