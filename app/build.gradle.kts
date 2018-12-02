@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
+import java.io.IOException
 
 plugins {
     id("com.android.application")
@@ -10,13 +11,17 @@ plugins {
     id("com.getkeepsafe.dexcount")
 }
 
+val gitHash: String = ("git rev-parse --short HEAD".runCommand(project.rootDir)).trim()
+
+val gitCommitCount : Int = (0 + Integer.parseInt(("git rev-list --count HEAD".runCommand(project.rootDir)).trim()))
+
 android {
     compileSdkVersion(27)
     defaultConfig {
         minSdkVersion(21)
         targetSdkVersion(26)
-        versionCode = 42
-        versionName = "Kotlin DSL"
+        versionName = gitHash
+        versionCode = gitCommitCount
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -24,6 +29,26 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
+    }
+    flavorDimensions("default")
+
+    productFlavors {
+        create("production") {
+            resValue("string", "app_name", "Vouchers Production")
+            //applicationId = ""
+            dimension = "default"
+        }
+        create("beta") {
+            resValue("string", "app_name", "Vouchers Beta")
+            //applicationId = ""
+            applicationIdSuffix = ".beta"
+            dimension = "default"
+        }
+    }
+
+    compileOptions{
+        setSourceCompatibility(1.8)
+        setTargetCompatibility(1.8)
     }
 }
 
@@ -65,5 +90,21 @@ dependencies {
     testImplementation ("junit:junit:4.12")
     androidTestImplementation ("com.android.support.test:runner:$supportRunner")
     androidTestImplementation ("com.android.support.test.espresso:espresso-core:3.0.2")
+}
 
+fun String.runCommand(workingDir: File = File("."),
+                      timeoutAmount: Long = 60,
+                      timeoutUnit: TimeUnit = TimeUnit.SECONDS): String {
+    return try {
+        ProcessBuilder(*this.split("\\s".toRegex()).toTypedArray())
+            .directory(workingDir)
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .start().apply {
+                waitFor(timeoutAmount, timeoutUnit)
+            }.inputStream.bufferedReader().readText()
+    } catch (e: IOException) {
+        e.printStackTrace()
+        "Kotlin DSL"
+    }
 }
