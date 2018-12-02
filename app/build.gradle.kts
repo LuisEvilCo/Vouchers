@@ -30,17 +30,16 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+
     flavorDimensions("default")
 
     productFlavors {
         create("production") {
             resValue("string", "app_name", "Vouchers Production")
-            //applicationId = ""
             dimension = "default"
         }
         create("beta") {
             resValue("string", "app_name", "Vouchers Beta")
-            //applicationId = ""
             applicationIdSuffix = ".beta"
             dimension = "default"
         }
